@@ -15,7 +15,7 @@ from narwhals.dependencies import get_polars
 if TYPE_CHECKING:
     from narwhals._dataframe import DataFrame
     from narwhals._dataframe import LazyFrame
-    from narwhals.series import Series
+    from narwhals._series import Series
 
 
 def to_native(
@@ -32,7 +32,7 @@ def to_native(
         Object of class that user started with.
     """
     from narwhals._dataframe import BaseFrame
-    from narwhals.series import Series
+    from narwhals._series import Series
 
     if isinstance(narwhals_object, BaseFrame):
         return (
@@ -154,7 +154,7 @@ def from_native(
     """
     from narwhals._dataframe import DataFrame
     from narwhals._dataframe import LazyFrame
-    from narwhals.series import Series
+    from narwhals._series import Series
 
     if series_only:
         allow_series = True

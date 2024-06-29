@@ -13,7 +13,7 @@ from narwhals.dependencies import get_polars
 
 if TYPE_CHECKING:
     from narwhals._dataframe import BaseFrame
-    from narwhals.series import Series
+    from narwhals._series import Series
 
 T = TypeVar("T")
 
@@ -45,7 +45,7 @@ def tupleify(arg: Any) -> Any:
 
 
 def _is_iterable(arg: Any | Iterable[Any]) -> bool:
-    from narwhals.series import Series
+    from narwhals._series import Series
 
     if (pd := get_pandas()) is not None and isinstance(arg, (pd.Series, pd.DataFrame)):
         msg = f"Expected Narwhals class or scalar, got: {type(arg)}. Perhaps you forgot a `nw.from_native` somewhere?"
@@ -131,7 +131,7 @@ def maybe_align_index(lhs: T, rhs: Series | BaseFrame) -> T:
     from narwhals._dataframe import DataFrame
     from narwhals._pandas_like.dataframe import PandasDataFrame
     from narwhals._pandas_like.series import PandasSeries
-    from narwhals.series import Series
+    from narwhals._series import Series
 
     def _validate_index(index: Any) -> None:
         if not index.is_unique:

@@ -11,7 +11,7 @@ if TYPE_CHECKING:
         from typing_extensions import TypeAlias
 
     from narwhals._expression import Expr
-    from narwhals.series import Series
+    from narwhals._series import Series
 
     IntoExpr: TypeAlias = Union[Expr, str, int, float, Series]
 

@@ -105,7 +105,7 @@ class Series:
         return self._series.shape  # type: ignore[no-any-return]
 
     def _extract_native(self, arg: Any) -> Any:
-        from narwhals.series import Series
+        from narwhals._series import Series
 
         if isinstance(arg, Series):
             return arg._series

@@ -27,8 +27,8 @@ if TYPE_CHECKING:
 
     from narwhals._group_by import GroupBy
     from narwhals._group_by import LazyGroupBy
+    from narwhals._series import Series
     from narwhals.dtypes import DType
-    from narwhals.series import Series
     from narwhals.typing import IntoExpr
 
 
@@ -66,7 +66,7 @@ class BaseFrame:
 
     def _extract_native(self, arg: Any) -> Any:
         from narwhals._expression import Expr
-        from narwhals.series import Series
+        from narwhals._series import Series
 
         if isinstance(arg, BaseFrame):
             return arg._dataframe
@@ -383,7 +383,7 @@ class DataFrame(BaseFrame):
 
     def __getitem__(self, item: str | range | slice) -> Series | DataFrame:
         if isinstance(item, str):
-            from narwhals.series import Series
+            from narwhals._series import Series
 
             return Series(self._dataframe[item])
 
@@ -430,7 +430,7 @@ class DataFrame(BaseFrame):
             >>> func(df_pl)
             {'A': [1, 2, 3, 4, 5], 'fruits': ['banana', 'banana', 'apple', 'apple', 'banana'], 'B': [5, 4, 3, 2, 1], 'cars': ['beetle', 'audi', 'beetle', 'beetle', 'beetle'], 'optional': [28, 300, None, 2, -30]}
         """
-        from narwhals.series import Series
+        from narwhals._series import Series
 
         if as_series:
             return {
@@ -1542,7 +1542,7 @@ class DataFrame(BaseFrame):
                 true
             ]
         """
-        from narwhals.series import Series
+        from narwhals._series import Series
 
         return Series(self._dataframe.is_duplicated())
 
@@ -1624,7 +1624,7 @@ class DataFrame(BaseFrame):
                 false
             ]
         """
-        from narwhals.series import Series
+        from narwhals._series import Series
 
         return Series(self._dataframe.is_unique())
 
