@@ -25,9 +25,9 @@ if TYPE_CHECKING:
     import numpy as np
     from typing_extensions import Self
 
+    from narwhals._group_by import GroupBy
+    from narwhals._group_by import LazyGroupBy
     from narwhals.dtypes import DType
-    from narwhals.group_by import GroupBy
-    from narwhals.group_by import LazyGroupBy
     from narwhals.series import Series
     from narwhals.typing import IntoExpr
 
@@ -1334,7 +1334,7 @@ class DataFrame(BaseFrame):
             │ c   ┆ 3   ┆ 1   │
             └─────┴─────┴─────┘
         """
-        from narwhals.group_by import GroupBy
+        from narwhals._group_by import GroupBy
 
         return GroupBy(self, *keys)
 
@@ -2749,7 +2749,7 @@ class LazyFrame(BaseFrame):
             │ c   ┆ 3   ┆ 1   │
             └─────┴─────┴─────┘
         """
-        from narwhals.group_by import LazyGroupBy
+        from narwhals._group_by import LazyGroupBy
 
         return LazyGroupBy(self, *keys)
 
