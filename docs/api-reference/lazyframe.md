@@ -1,6 +1,6 @@
 # `narwhals.LazyFrame`
 
-::: narwhals.dataframe.LazyFrame
+::: narwhals._dataframe.LazyFrame
     handler: python
     options:
       members:

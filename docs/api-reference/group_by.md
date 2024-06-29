@@ -1,6 +1,6 @@
 # `narwhals.GroupBy`
 
-::: narwhals.group_by.GroupBy
+::: narwhals._group_by.GroupBy
     handler: python
     options:
       members:
