@@ -14,6 +14,10 @@ from narwhals._expression import sum_horizontal
 from narwhals._functions import concat
 from narwhals._functions import show_versions
 from narwhals._series import Series
+from narwhals._translate import from_native
+from narwhals._translate import get_native_namespace
+from narwhals._translate import narwhalify
+from narwhals._translate import to_native
 from narwhals.dtypes import Boolean
 from narwhals.dtypes import Categorical
 from narwhals.dtypes import Date
@@ -30,10 +34,6 @@ from narwhals.dtypes import UInt8
 from narwhals.dtypes import UInt16
 from narwhals.dtypes import UInt32
 from narwhals.dtypes import UInt64
-from narwhals.translate import from_native
-from narwhals.translate import get_native_namespace
-from narwhals.translate import narwhalify
-from narwhals.translate import to_native
 from narwhals.utils import maybe_align_index
 from narwhals.utils import maybe_convert_dtypes
 from narwhals.utils import maybe_set_index
