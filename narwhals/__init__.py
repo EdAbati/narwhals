@@ -11,6 +11,8 @@ from narwhals._expression import mean
 from narwhals._expression import min
 from narwhals._expression import sum
 from narwhals._expression import sum_horizontal
+from narwhals._functions import concat
+from narwhals._functions import show_versions
 from narwhals.dtypes import Boolean
 from narwhals.dtypes import Categorical
 from narwhals.dtypes import Date
@@ -27,8 +29,6 @@ from narwhals.dtypes import UInt8
 from narwhals.dtypes import UInt16
 from narwhals.dtypes import UInt32
 from narwhals.dtypes import UInt64
-from narwhals.functions import concat
-from narwhals.functions import show_versions
 from narwhals.series import Series
 from narwhals.translate import from_native
 from narwhals.translate import get_native_namespace
