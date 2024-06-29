@@ -65,7 +65,7 @@ class BaseFrame:
         return args, kwargs
 
     def _extract_native(self, arg: Any) -> Any:
-        from narwhals.expression import Expr
+        from narwhals._expression import Expr
         from narwhals.series import Series
 
         if isinstance(arg, BaseFrame):
