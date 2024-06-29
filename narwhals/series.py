@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     import numpy as np
     from typing_extensions import Self
 
-    from narwhals.dataframe import DataFrame
+    from narwhals._dataframe import DataFrame
 
 
 class Series:
@@ -297,7 +297,7 @@ class Series:
             │ 3   │
             └─────┘
         """
-        from narwhals.dataframe import DataFrame
+        from narwhals._dataframe import DataFrame
 
         return DataFrame(self._series.to_frame())
 
@@ -1552,7 +1552,7 @@ class Series:
             │ 3   ┆ 1     │
             └─────┴───────┘
         """
-        from narwhals.dataframe import DataFrame
+        from narwhals._dataframe import DataFrame
 
         return DataFrame(self._series.value_counts(sort=sort, parallel=parallel))
 

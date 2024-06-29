@@ -13,8 +13,8 @@ from narwhals.dependencies import get_pandas
 from narwhals.dependencies import get_polars
 
 if TYPE_CHECKING:
-    from narwhals.dataframe import DataFrame
-    from narwhals.dataframe import LazyFrame
+    from narwhals._dataframe import DataFrame
+    from narwhals._dataframe import LazyFrame
     from narwhals.series import Series
 
 
@@ -31,7 +31,7 @@ def to_native(
     Returns:
         Object of class that user started with.
     """
-    from narwhals.dataframe import BaseFrame
+    from narwhals._dataframe import BaseFrame
     from narwhals.series import Series
 
     if isinstance(narwhals_object, BaseFrame):
@@ -152,8 +152,8 @@ def from_native(
     Returns:
         narwhals.DataFrame or narwhals.LazyFrame or narwhals.Series
     """
-    from narwhals.dataframe import DataFrame
-    from narwhals.dataframe import LazyFrame
+    from narwhals._dataframe import DataFrame
+    from narwhals._dataframe import LazyFrame
     from narwhals.series import Series
 
     if series_only:

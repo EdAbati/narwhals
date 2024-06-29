@@ -12,7 +12,7 @@ from narwhals.dependencies import get_pandas
 from narwhals.dependencies import get_polars
 
 if TYPE_CHECKING:
-    from narwhals.dataframe import BaseFrame
+    from narwhals._dataframe import BaseFrame
     from narwhals.series import Series
 
 T = TypeVar("T")
@@ -91,8 +91,8 @@ def validate_same_library(items: Iterable[Any]) -> None:
 
 
 def validate_laziness(items: Iterable[Any]) -> None:
-    from narwhals.dataframe import DataFrame
-    from narwhals.dataframe import LazyFrame
+    from narwhals._dataframe import DataFrame
+    from narwhals._dataframe import LazyFrame
 
     if all(isinstance(item, DataFrame) for item in items) or (
         all(isinstance(item, LazyFrame) for item in items)
@@ -128,9 +128,9 @@ def maybe_align_index(lhs: T, rhs: Series | BaseFrame) -> T:
         4  2
         3  1
     """
+    from narwhals._dataframe import DataFrame
     from narwhals._pandas_like.dataframe import PandasDataFrame
     from narwhals._pandas_like.series import PandasSeries
-    from narwhals.dataframe import DataFrame
     from narwhals.series import Series
 
     def _validate_index(index: Any) -> None:
@@ -208,8 +208,8 @@ def maybe_set_index(df: T, column_names: str | list[str]) -> T:
         4  1
         5  2
     """
+    from narwhals._dataframe import DataFrame
     from narwhals._pandas_like.dataframe import PandasDataFrame
-    from narwhals.dataframe import DataFrame
 
     df_any = cast(Any, df)
     if isinstance(getattr(df_any, "_dataframe", None), PandasDataFrame):
@@ -246,8 +246,8 @@ def maybe_convert_dtypes(df: T, *args: bool, **kwargs: bool | str) -> T:
         b           boolean
         dtype: object
     """
+    from narwhals._dataframe import DataFrame
     from narwhals._pandas_like.dataframe import PandasDataFrame
-    from narwhals.dataframe import DataFrame
 
     df_any = cast(Any, df)
     if isinstance(getattr(df_any, "_dataframe", None), PandasDataFrame):
