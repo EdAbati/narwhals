@@ -20,6 +20,7 @@ from tests.utils import assert_equal_data
 if TYPE_CHECKING:
     from pyspark.sql import SparkSession
 
+    from narwhals.expr import Expr
     from narwhals.typing import IntoFrame
     from tests.utils import Constructor
 
@@ -104,6 +105,24 @@ def test_select(pyspark_constructor: Constructor) -> None:
 def test_empty_select(pyspark_constructor: Constructor) -> None:
     result = nw.from_native(pyspark_constructor({"a": [1, 2, 3]})).lazy().select()
     assert result.collect().shape == (0, 0)
+
+
+@pytest.mark.parametrize(
+    ("expr", "expected"),
+    [
+        (nw.col("a") + nw.col("b").sum(), {"a": [16, 16, 17]}),
+        (nw.col("b").sum() + nw.col("a"), {"b": [16, 16, 17]}),
+        (nw.col("b").sum() + nw.col("a").sum(), {"b": [19]}),
+    ],
+)
+def test_left_to_right_broadcasting(
+    pyspark_constructor: Constructor,
+    expr: Expr,
+    expected: dict[str, float],
+) -> None:
+    df = nw.from_native(pyspark_constructor({"a": [1, 1, 2], "b": [4, 5, 6]}))
+    result = df.select(expr)
+    assert_equal_data(result, expected)
 
 
 # copied from tests/frame/filter_test.py

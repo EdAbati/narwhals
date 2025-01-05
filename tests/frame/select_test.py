@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
 from typing import Any
 
 import pandas as pd
@@ -14,6 +15,9 @@ from tests.utils import PANDAS_VERSION
 from tests.utils import POLARS_VERSION
 from tests.utils import Constructor
 from tests.utils import assert_equal_data
+
+if TYPE_CHECKING:
+    from narwhals.expr import Expr
 
 
 class Foo: ...
@@ -115,18 +119,22 @@ def test_missing_columns(constructor: Constructor) -> None:
             df.select(nw.col("fdfa"))
 
 
+@pytest.mark.parametrize(
+    ("expr", "expected"),
+    [
+        (nw.col("a") + nw.col("b").sum(), {"a": [16, 16, 17]}),
+        (nw.col("b").sum() + nw.col("a"), {"b": [16, 16, 17]}),
+        (nw.col("b").sum() + nw.col("a").sum(), {"b": [19]}),
+    ],
+)
 def test_left_to_right_broadcasting(
-    constructor: Constructor, request: pytest.FixtureRequest
+    constructor: Constructor,
+    request: pytest.FixtureRequest,
+    expr: Expr,
+    expected: dict[str, list[int]],
 ) -> None:
     if "dask" in str(constructor) and DASK_VERSION < (2024, 9):
         request.applymarker(pytest.mark.xfail)
     df = nw.from_native(constructor({"a": [1, 1, 2], "b": [4, 5, 6]}))
-    result = df.select(nw.col("a") + nw.col("b").sum())
-    expected = {"a": [16, 16, 17]}
-    assert_equal_data(result, expected)
-    result = df.select(nw.col("b").sum() + nw.col("a"))
-    expected = {"b": [16, 16, 17]}
-    assert_equal_data(result, expected)
-    result = df.select(nw.col("b").sum() + nw.col("a").sum())
-    expected = {"b": [19]}
+    result = df.select(expr)
     assert_equal_data(result, expected)
