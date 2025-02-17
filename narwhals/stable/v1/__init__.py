@@ -98,6 +98,7 @@ if TYPE_CHECKING:
 
 T = TypeVar("T")
 
+raise ValueError("This is a test error")
 
 class DataFrame(NwDataFrame[IntoDataFrameT]):
     """Narwhals DataFrame, backed by a native eager dataframe.
