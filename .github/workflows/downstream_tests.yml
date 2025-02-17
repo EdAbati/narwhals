@@ -110,8 +110,8 @@ jobs:
           # make sure that we use the .venv when running tests, so that
           # the local narwhals install is picked up
           sed -i '/^\[tool.hatch.envs.default\]/a path = ".venv"' pyproject.toml
-          hatch run --env test-optional python -c "import narwhals; print(narwhals.__file__)"
-          hatch -v run +py=3.12 test-optional:test-narwhals
+          hatch -v run +py=3.12 test-optional:python -c "import narwhals; print(narwhals.__file__)"
+          hatch run +py=3.12 test-optional:test-narwhals
         timeout-minutes: 15
 
   scikit-lego:
