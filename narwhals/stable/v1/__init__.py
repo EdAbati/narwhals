@@ -98,7 +98,6 @@ if TYPE_CHECKING:
 
 T = TypeVar("T")
 
-raise ValueError("This is a test error")
 
 class DataFrame(NwDataFrame[IntoDataFrameT]):
     """Narwhals DataFrame, backed by a native eager dataframe.
@@ -321,6 +320,7 @@ class LazyFrame(NwLazyFrame[IntoFrameT]):
         Returns:
             DataFrame
         """
+        raise ValueError("This is a test error")
         return super().collect(backend=backend, **kwargs)  # type: ignore[return-value]
 
     def _l1_norm(self: Self) -> Self:
