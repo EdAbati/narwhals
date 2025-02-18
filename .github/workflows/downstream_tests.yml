@@ -114,7 +114,8 @@ jobs:
           # the local narwhals install is picked up
           # sed -i '/^\[tool.hatch.envs.default\]/a path = ".venv"' pyproject.toml
           # hatch -v run +py=${{ matrix.python-version }} test-optional:python -c "import narwhals; print(narwhals.__file__)"
-          sed -i '/^\[tool.hatch.envs.default\]/a path = ".venv"' pyproject.toml
+          sed -i '/^\[tool.hatch.envs.default\]/a type = "virtual" path = ".venv"' pyproject.toml
+          cat pyproject.toml
           hatch -v run python -c "import narwhals; print(narwhals.__file__)"
           hatch -v run +py=${{ matrix.python-version }} test-optional:test-narwhals
         timeout-minutes: 15
