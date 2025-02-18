@@ -1340,6 +1340,7 @@ class DataFrame(BaseFrame[DataFrameT]):
             |a_plus_1: [[2,3]] |
             └──────────────────┘
         """
+        raise ValueError("This is a test error")
         return super().select(*exprs, **named_exprs)
 
     def rename(self: Self, mapping: dict[str, str]) -> Self:
