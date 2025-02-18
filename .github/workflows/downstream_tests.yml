@@ -112,7 +112,7 @@ jobs:
           . .venv/bin/activate
           # make sure that we use the .venv when running tests, so that
           # the local narwhals install is picked up
-          sed -i '/^\[tool.hatch.envs.test-optional\]/a path = ".venv"' pyproject.toml
+          sed -i '/^\[tool.hatch.envs.default\]/a path = ".venv"' pyproject.toml
           hatch -v run +py=${{ matrix.python-version }} test-optional:python -c "import narwhals; print(narwhals.__file__)"
           hatch run +py=${{ matrix.python-version }} test-optional:test-narwhals
         timeout-minutes: 15
