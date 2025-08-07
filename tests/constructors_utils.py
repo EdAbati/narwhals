@@ -31,88 +31,9 @@ ConstructorEager: TypeAlias = Callable[[Any], "NativeFrame | DataFrameLike"]
 ConstructorLazy: TypeAlias = Callable[[Any], "NativeLazyFrame"]
 
 
-def pandas_constructor(obj: Data) -> pd.DataFrame:
-    import pandas as pd
-
-    return pd.DataFrame(obj)
-
-
-def pandas_nullable_constructor(obj: Data) -> pd.DataFrame:
-    import pandas as pd
-
-    return pd.DataFrame(obj).convert_dtypes(dtype_backend="numpy_nullable")
-
-
-def pandas_pyarrow_constructor(obj: Data) -> pd.DataFrame:
-    import pandas as pd
-
-    return pd.DataFrame(obj).convert_dtypes(dtype_backend="pyarrow")
-
-
-def modin_constructor(obj: Data) -> NativeFrame:  # pragma: no cover
-    import modin.pandas as mpd
-    import pandas as pd
-
-    df = mpd.DataFrame(pd.DataFrame(obj))
-    return cast("NativeFrame", df)
-
-
-def modin_pyarrow_constructor(obj: Data) -> NativeFrame:  # pragma: no cover
-    import modin.pandas as mpd
-    import pandas as pd
-
-    df = mpd.DataFrame(pd.DataFrame(obj)).convert_dtypes(dtype_backend="pyarrow")
-    return cast("NativeFrame", df)
-
-
-def cudf_constructor(obj: Data) -> NativeFrame:  # pragma: no cover
-    import cudf
-
-    df = cudf.DataFrame(obj)
-    return cast("NativeFrame", df)
-
-
-def polars_eager_constructor(obj: Data) -> pl.DataFrame:
-    import polars as pl
-
-    return pl.DataFrame(obj)
-
-
-def polars_lazy_constructor(obj: Data) -> pl.LazyFrame:
-    import polars as pl
-
-    return pl.LazyFrame(obj)
-
-
-def duckdb_lazy_constructor(obj: Data) -> duckdb.DuckDBPyRelation:
-    import duckdb
-    import polars as pl
-
-    duckdb.sql("""set timezone = 'UTC'""")
-
-    _df = pl.LazyFrame(obj)
-    return duckdb.table("_df")
-
-
-def dask_lazy_p1_constructor(obj: Data) -> NativeLazyFrame:  # pragma: no cover
-    import dask.dataframe as dd
-
-    return cast("NativeLazyFrame", dd.from_dict(obj, npartitions=1))
-
-
-def dask_lazy_p2_constructor(obj: Data) -> NativeLazyFrame:  # pragma: no cover
-    import dask.dataframe as dd
-
-    return cast("NativeLazyFrame", dd.from_dict(obj, npartitions=2))
-
-
-def pyarrow_table_constructor(obj: dict[str, Any]) -> pa.Table:
-    import pyarrow as pa
-
-    return pa.table(obj)
-
-
-def pyspark_lazy_constructor() -> Callable[[Data], PySparkDataFrame]:  # pragma: no cover
+def _get_pyspark_lazy_constructor() -> Callable[
+    [Data], PySparkDataFrame
+]:  # pragma: no cover
     pytest.importorskip("pyspark")
     import warnings
     from atexit import register
@@ -164,27 +85,12 @@ def pyspark_lazy_constructor() -> Callable[[Data], PySparkDataFrame]:  # pragma:
         return _constructor
 
 
-def sqlframe_pyspark_lazy_constructor(obj: Data) -> SQLFrameDataFrame:  # pragma: no cover
-    from sqlframe.duckdb import DuckDBSession
-
-    session = DuckDBSession()
-    return session.createDataFrame([*zip(*obj.values())], schema=[*obj.keys()])
-
-
 @lru_cache(maxsize=1)
 def _ibis_backend() -> IbisDuckDBBackend:  # pragma: no cover
     """Cached (singleton) in-memory backend to ensure all tables exist within the same in-memory database."""
     import ibis
 
     return ibis.duckdb.connect()
-
-
-def ibis_lazy_constructor(obj: Data) -> ibis.Table:  # pragma: no cover
-    import polars as pl
-
-    ldf = pl.from_dict(obj).lazy()
-    table_name = str(uuid.uuid4())
-    return _ibis_backend().create_table(table_name, ldf)
 
 
 class ConstructorName(str, Enum):
@@ -206,35 +112,6 @@ class ConstructorName(str, Enum):
     SQLFRAME = "sqlframe"
     IBIS = "ibis"
 
-    def is_any_pyspark(self) -> bool:
-        """Check if the constructor is any PySpark related."""
-        return self in {ConstructorName.PYSPARK, ConstructorName.PYSPARK_CONNECT}
-
-    def is_eager(self) -> bool:
-        """Check if the constructor is an eager constructor."""
-        return self in _EAGER_CONSTRUCTORS
-
-    def is_lazy(self) -> bool:
-        """Check if the constructor is a lazy constructor."""
-        return self in _LAZY_CONSTRUCTORS
-
-    def is_gpu(self) -> bool:
-        """Check if the constructor is a GPU constructor."""
-        return self in _GPU_CONSTRUCTORS
-
-    def to_constructor(self) -> ConstructorBase:
-        """Return the constructor function associated with this constructor name."""
-        if self.is_any_pyspark():
-            return PySparkConstructor()
-        if self in _EAGER_CONSTRUCTORS:
-            return _EAGER_CONSTRUCTORS[self]
-        if self in _LAZY_CONSTRUCTORS:
-            return _LAZY_CONSTRUCTORS[self]
-        if self in _GPU_CONSTRUCTORS:
-            return _GPU_CONSTRUCTORS[self]
-        msg = f"Unknown constructor name: {self}"
-        raise ValueError(msg)
-
     @classmethod
     def from_pytest_request(cls, request: pytest.FixtureRequest) -> ConstructorName:
         """Get the constructor name from the pytest request."""
@@ -242,68 +119,34 @@ class ConstructorName(str, Enum):
         return cls(constructor_id)
 
 
-def get_all_cpu_constructors() -> list[ConstructorName]:
-    """Return all CPU constructors."""
-    return [
-        name
-        for name in ConstructorName
-        if name not in _GPU_CONSTRUCTORS
-        and name
-        not in {
-            ConstructorName.MODIN,  # too slow
-            ConstructorName.PYSPARK_CONNECT,  # complex local setup; can't run together with local spark
-        }
-    ]
-
-
-def get_all_default_constructors() -> set[ConstructorName]:
-    """Return all default constructors."""
-    return {
-        ConstructorName.PANDAS,
-        ConstructorName.PANDAS_PYARROW,
-        ConstructorName.POLARS_EAGER,
-        ConstructorName.PYARROW,
-        ConstructorName.DUCKDB,
-        ConstructorName.SQLFRAME,
-        ConstructorName.IBIS,
-    }
-
-
-_EAGER_CONSTRUCTORS: dict[ConstructorName, ConstructorEager] = {
-    ConstructorName.PANDAS: pandas_constructor,
-    ConstructorName.PANDAS_NULLABLE: pandas_nullable_constructor,
-    ConstructorName.PANDAS_PYARROW: pandas_pyarrow_constructor,
-    ConstructorName.PYARROW: pyarrow_table_constructor,
-    ConstructorName.MODIN: modin_constructor,
-    ConstructorName.MODIN_PYARROW: modin_pyarrow_constructor,
-    ConstructorName.CUDF: cudf_constructor,
-    ConstructorName.POLARS_EAGER: polars_eager_constructor,
-}
-_LAZY_CONSTRUCTORS: dict[ConstructorName, ConstructorLazy] = {
-    ConstructorName.DASK: dask_lazy_p2_constructor,
-    ConstructorName.POLARS_LAZY: polars_lazy_constructor,
-    ConstructorName.DUCKDB: duckdb_lazy_constructor,
-    ConstructorName.PYSPARK: pyspark_lazy_constructor,  # type: ignore[dict-item]
-    ConstructorName.SQLFRAME: sqlframe_pyspark_lazy_constructor,
-    ConstructorName.IBIS: ibis_lazy_constructor,
-}
-_GPU_CONSTRUCTORS: dict[ConstructorName, ConstructorEager] = {
-    ConstructorName.CUDF: cudf_constructor
+DEFAULT_CONSTRUCTORS = {
+    ConstructorName.PANDAS,
+    ConstructorName.PANDAS_PYARROW,
+    ConstructorName.POLARS_EAGER,
+    ConstructorName.PYARROW,
+    ConstructorName.DUCKDB,
+    ConstructorName.SQLFRAME,
+    ConstructorName.IBIS,
 }
 
 
 class ConstructorBase:
     name: ConstructorName
+    is_eager: bool
     needs_gpu: bool = False
 
     def __call__(self, obj: Data) -> NativeLazyFrame | NativeFrame | DataFrameLike: ...
 
 
 class ConstructorEagerBase(ConstructorBase):
+    is_eager: bool = True
+
     def __call__(self, obj: Data) -> NativeFrame | DataFrameLike: ...
 
 
 class ConstructorLazyBase(ConstructorBase):
+    is_eager: bool = False
+
     def __call__(self, obj: Data) -> NativeLazyFrame: ...
 
 
@@ -311,18 +154,172 @@ class PandasConstructor(ConstructorEagerBase):
     name = ConstructorName.PANDAS
 
     def __call__(self, obj: Data) -> pd.DataFrame:
-        return pandas_constructor(obj)
+        import pandas as pd
+
+        return pd.DataFrame(obj)
+
+
+class PandasNullableConstructor(ConstructorEagerBase):
+    name = ConstructorName.PANDAS_NULLABLE
+
+    def __call__(self, obj: Data) -> pd.DataFrame:
+        import pandas as pd
+
+        return pd.DataFrame(obj).convert_dtypes(dtype_backend="numpy_nullable")
+
+
+class PandasPyArrowConstructor(ConstructorEagerBase):
+    name = ConstructorName.PANDAS_PYARROW
+
+    def __call__(self, obj: Data) -> pd.DataFrame:
+        import pandas as pd
+
+        return pd.DataFrame(obj).convert_dtypes(dtype_backend="pyarrow")
+
+
+class ModinConstructor(ConstructorEagerBase):  # pragma: no cover
+    name = ConstructorName.MODIN
+
+    def __call__(self, obj: Data) -> NativeFrame:
+        import modin.pandas as mpd
+        import pandas as pd
+
+        df = mpd.DataFrame(pd.DataFrame(obj))
+        return cast("NativeFrame", df)
+
+
+class ModinPyArrowConstructor(ConstructorEagerBase):  # pragma: no cover
+    name = ConstructorName.MODIN_PYARROW
+
+    def __call__(self, obj: Data) -> NativeFrame:
+        import modin.pandas as mpd
+        import pandas as pd
+
+        df = mpd.DataFrame(pd.DataFrame(obj)).convert_dtypes(dtype_backend="pyarrow")
+        return cast("NativeFrame", df)
+
+
+class CudfConstructor(ConstructorEagerBase):  # pragma: no cover
+    name = ConstructorName.CUDF
+    needs_gpu = True
+
+    def __call__(self, obj: Data) -> NativeFrame:
+        import cudf
+
+        df = cudf.DataFrame(obj)
+        return cast("NativeFrame", df)
 
 
 class PolarsEagerConstructor(ConstructorEagerBase):
     name = ConstructorName.POLARS_EAGER
 
     def __call__(self, obj: Data) -> pl.DataFrame:
-        return polars_eager_constructor(obj)
+        import polars as pl
+
+        return pl.DataFrame(obj)
 
 
-class PySparkConstructor(ConstructorLazyBase):
+class PolarsLazyConstructor(ConstructorLazyBase):
+    name = ConstructorName.POLARS_LAZY
+
+    def __call__(self, obj: Data) -> pl.LazyFrame:
+        import polars as pl
+
+        return pl.LazyFrame(obj)
+
+
+class DuckDBConstructor(ConstructorLazyBase):
+    name = ConstructorName.DUCKDB
+
+    def __call__(self, obj: Data) -> duckdb.DuckDBPyRelation:
+        import duckdb
+        import polars as pl
+
+        duckdb.sql("""set timezone = 'UTC'""")
+
+        _df = pl.LazyFrame(obj)
+        return duckdb.table("_df")
+
+
+class DaskLazyConstructor(ConstructorLazyBase):  # pragma: no cover
+    name = ConstructorName.DASK
+
+    def __init__(self, npartitions: int = 2) -> None:
+        self.npartitions = npartitions
+
+    def __call__(self, obj: Data) -> NativeLazyFrame:
+        import dask.dataframe as dd
+
+        return cast("NativeLazyFrame", dd.from_dict(obj, npartitions=self.npartitions))
+
+
+class PyArrowConstructor(ConstructorEagerBase):
+    name = ConstructorName.PYARROW
+
+    def __call__(self, obj: dict[str, Any]) -> pa.Table:
+        import pyarrow as pa
+
+        return pa.table(obj)
+
+
+class PySparkConstructor(ConstructorLazyBase):  # pragma: no cover
     name = ConstructorName.PYSPARK
 
     def __call__(self, obj: Data) -> PySparkDataFrame:
-        return pyspark_lazy_constructor()(obj)
+        constructor = _get_pyspark_lazy_constructor()
+        return constructor(obj)
+
+
+class SQLFramePySparkLazyConstructor(ConstructorLazyBase):  # pragma: no cover
+    name = ConstructorName.SQLFRAME
+
+    def __call__(self, obj: Data) -> SQLFrameDataFrame:
+        from sqlframe.duckdb import DuckDBSession
+
+        session = DuckDBSession()
+        return session.createDataFrame([*zip(*obj.values())], schema=[*obj.keys()])
+
+
+class IbisConstructor(ConstructorLazyBase):  # pragma: no cover
+    name = ConstructorName.IBIS
+
+    def __call__(self, obj: Data) -> ibis.Table:
+        import polars as pl
+
+        ldf = pl.from_dict(obj).lazy()
+        table_name = str(uuid.uuid4())
+        return _ibis_backend().create_table(table_name, ldf)
+
+
+ALL_CONSTRUCTORS: set[ConstructorBase] = {
+    PandasConstructor(),
+    PandasNullableConstructor(),
+    PandasPyArrowConstructor(),
+    ModinConstructor(),
+    ModinPyArrowConstructor(),
+    CudfConstructor(),
+    PolarsEagerConstructor(),
+    PolarsLazyConstructor(),
+    DuckDBConstructor(),
+    DaskLazyConstructor(),
+    PyArrowConstructor(),
+    PySparkConstructor(),
+    SQLFramePySparkLazyConstructor(),
+    IbisConstructor(),
+}
+
+ALL_CONSTRUCTORS_MAP: dict[ConstructorName, ConstructorBase] = {
+    constructor.name: constructor for constructor in ALL_CONSTRUCTORS
+}
+
+ALL_CPU_CONSTRUCTORS = {
+    constructor.name for constructor in ALL_CONSTRUCTORS if not constructor.needs_gpu
+}
+
+
+def get_constructor(constructor_name: ConstructorName) -> ConstructorBase:
+    """Get a constructor by name."""
+    if constructor_name not in ALL_CONSTRUCTORS_MAP:
+        msg = f"Constructor {constructor_name} not found."
+        raise ValueError(msg)
+    return ALL_CONSTRUCTORS_MAP[constructor_name]

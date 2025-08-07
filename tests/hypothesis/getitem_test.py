@@ -9,7 +9,7 @@ from hypothesis import assume, given
 from hypothesis.extra.numpy import arrays
 
 import narwhals as nw
-from tests.conftest import pandas_constructor, pyarrow_table_constructor
+from tests.constructors_utils import PandasConstructor, PyArrowConstructor
 from tests.utils import assert_equal_data
 
 if TYPE_CHECKING:
@@ -20,8 +20,10 @@ if TYPE_CHECKING:
 pytest.importorskip("polars")
 import polars as pl
 
+PandasOrPyArrowConstructor = PandasConstructor | PyArrowConstructor
 
-@pytest.fixture(params=[pandas_constructor, pyarrow_table_constructor], scope="module")
+
+@pytest.fixture(params=[PandasConstructor(), PyArrowConstructor()], scope="module")
 def pandas_or_pyarrow_constructor(
     request: pytest.FixtureRequest,
 ) -> Callable[[Any], IntoDataFrame]:
@@ -114,7 +116,9 @@ def tuple_selector(draw: st.DrawFn) -> tuple[Any, Any]:
 
 @given(selector=st.one_of(single_selector, tuple_selector()))
 @pytest.mark.slow
-def test_getitem(pandas_or_pyarrow_constructor: Any, selector: Any) -> None:
+def test_getitem(
+    pandas_or_pyarrow_constructor: PandasOrPyArrowConstructor, selector: Any
+) -> None:
     """Compare __getitem__ against polars."""
     # TODO(PR - clean up): documenting current differences
     # These assume(...) lines each filter out a known difference.
@@ -122,7 +126,7 @@ def test_getitem(pandas_or_pyarrow_constructor: Any, selector: Any) -> None:
     # NotImplementedError: Slicing with step is not supported on PyArrow tables
     assume(
         not (
-            pandas_or_pyarrow_constructor is pyarrow_table_constructor
+            pandas_or_pyarrow_constructor.name == "pyarrow"
             and isinstance(selector, slice)
             and selector.step is not None
         )
@@ -131,7 +135,7 @@ def test_getitem(pandas_or_pyarrow_constructor: Any, selector: Any) -> None:
     # NotImplementedError: Slicing with step is not supported on PyArrow tables
     assume(
         not (
-            pandas_or_pyarrow_constructor is pyarrow_table_constructor
+            pandas_or_pyarrow_constructor.name == "pyarrow"
             and isinstance(selector, tuple)
             and (
                 (isinstance(selector[0], slice) and selector[0].step is not None)

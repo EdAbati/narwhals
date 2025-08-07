@@ -8,19 +8,18 @@ import pytest
 
 import narwhals as nw
 from narwhals.exceptions import NarwhalsError
-from tests.conftest import (
-    dask_lazy_p1_constructor,
-    dask_lazy_p2_constructor,
-    modin_constructor,
-    pandas_constructor,
+from tests.constructors_utils import (
+    DaskLazyConstructor,
+    ModinConstructor,
+    PandasConstructor,
 )
 from tests.utils import Constructor, ConstructorEager, assert_equal_data
 
 NON_NULLABLE_CONSTRUCTORS = [
-    pandas_constructor,
-    dask_lazy_p1_constructor,
-    dask_lazy_p2_constructor,
-    modin_constructor,
+    PandasConstructor(),
+    DaskLazyConstructor(npartitions=1),
+    DaskLazyConstructor(),
+    ModinConstructor(),
 ]
 
 

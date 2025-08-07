@@ -6,18 +6,19 @@ from typing import TYPE_CHECKING, Any, cast
 import pytest
 
 from tests.constructors_utils import (
+    ALL_CPU_CONSTRUCTORS,
+    DEFAULT_CONSTRUCTORS,
     ConstructorName,
-    get_all_cpu_constructors,
-    get_all_default_constructors,
+    get_constructor,
 )
-from tests.utils import PANDAS_VERSION
+from tests.utils import PANDAS_VERSION, ConstructorEager
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
     from typing_extensions import TypeAlias
 
-    from tests.utils import Constructor, ConstructorEager
+    from tests.utils import Constructor
 
     Data: TypeAlias = "dict[str, list[Any]]"
 
@@ -30,9 +31,9 @@ MIN_PANDAS_NULLABLE_VERSION = (2,)
 if default_constructors := os.environ.get(
     "NARWHALS_DEFAULT_CONSTRUCTORS", None
 ):  # pragma: no cover
-    DEFAULT_CONSTRUCTORS = default_constructors
+    DEFAULT_CONSTRUCTORS_STR = default_constructors
 else:
-    DEFAULT_CONSTRUCTORS = ",".join(get_all_default_constructors())
+    DEFAULT_CONSTRUCTORS_STR = ",".join(DEFAULT_CONSTRUCTORS)
 
 
 def pytest_addoption(parser: pytest.Parser) -> None:
@@ -48,7 +49,7 @@ def pytest_addoption(parser: pytest.Parser) -> None:
     parser.addoption(
         "--constructors",
         action="store",
-        default=DEFAULT_CONSTRUCTORS,
+        default=DEFAULT_CONSTRUCTORS_STR,
         type=str,
         help="libraries to test",
     )
@@ -72,10 +73,10 @@ def pytest_collection_modifyitems(
 
 def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
     if metafunc.config.getoption("all_cpu_constructors"):  # pragma: no cover
-        selected_constructors = get_all_cpu_constructors()
+        selected_constructors = ALL_CPU_CONSTRUCTORS
     else:  # pragma: no cover
         opt = cast("str", metafunc.config.getoption("constructors"))
-        selected_constructors = [ConstructorName(c) for c in opt.split(",")]
+        selected_constructors = {ConstructorName(c) for c in opt.split(",")}
 
     eager_constructors: list[ConstructorEager] = []
     eager_constructors_ids: list[str] = []
@@ -90,10 +91,11 @@ def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
         ):
             continue  # pragma: no cover
 
-        if constructor_name.is_eager():
-            eager_constructors.append(constructor_name.to_constructor())
+        constructor = get_constructor(constructor_name)
+        if constructor.is_eager:
+            eager_constructors.append(constructor)
             eager_constructors_ids.append(str(constructor_name))
-        constructors.append(constructor_name.to_constructor())
+        constructors.append(constructor)
         constructors_ids.append(str(constructor_name))
 
     if "constructor_eager" in metafunc.fixturenames:
