@@ -6,7 +6,7 @@ import sys
 import warnings
 from datetime import date, datetime
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any
 
 import pandas as pd
 import pyarrow as pa
@@ -14,13 +14,13 @@ import pyarrow as pa
 import narwhals as nw
 from narwhals._utils import Implementation, parse_version
 from narwhals.translate import from_native
+from tests.constructors_utils import ConstructorName
 
 if TYPE_CHECKING:
     from collections.abc import Iterator, Mapping, Sequence
 
-    from typing_extensions import TypeAlias
-
-    from narwhals.typing import DataFrameLike, Frame, NativeFrame, NativeLazyFrame
+    from narwhals.typing import Frame
+    from tests.constructors_utils import Constructor, ConstructorEager
 
 
 def get_module_version_as_tuple(module_name: str) -> tuple[int, ...]:
@@ -39,10 +39,6 @@ DASK_VERSION: tuple[int, ...] = get_module_version_as_tuple("dask")
 PYARROW_VERSION: tuple[int, ...] = get_module_version_as_tuple("pyarrow")
 PYSPARK_VERSION: tuple[int, ...] = get_module_version_as_tuple("pyspark")
 CUDF_VERSION: tuple[int, ...] = get_module_version_as_tuple("cudf")
-
-Constructor: TypeAlias = Callable[[Any], "NativeLazyFrame | NativeFrame | DataFrameLike"]
-ConstructorEager: TypeAlias = Callable[[Any], "NativeFrame | DataFrameLike"]
-ConstructorLazy: TypeAlias = Callable[[Any], "NativeLazyFrame"]
 
 
 def zip_strict(left: Sequence[Any], right: Sequence[Any]) -> Iterator[Any]:
@@ -170,14 +166,18 @@ def windows_has_tzdata() -> bool:  # pragma: no cover
 
 def is_pyarrow_windows_no_tzdata(constructor: Constructor, /) -> bool:
     """Skip test on Windows when the tz database is not configured."""
-    return "pyarrow" in str(constructor) and is_windows() and not windows_has_tzdata()
+    return (
+        constructor.name == ConstructorName.PYARROW
+        and is_windows()
+        and not windows_has_tzdata()
+    )
 
 
 def uses_pyarrow_backend(constructor: Constructor | ConstructorEager) -> bool:
     """Checks if the pandas-like constructor uses pyarrow backend."""
-    return constructor.__name__ in {
-        "pandas_pyarrow_constructor",
-        "modin_pyarrow_constructor",
+    return constructor.name in {
+        ConstructorName.PANDAS_PYARROW,
+        ConstructorName.MODIN_PYARROW,
     }
 
 

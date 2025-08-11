@@ -8,17 +8,17 @@ import pytest
 from tests.constructors_utils import (
     ALL_CPU_CONSTRUCTORS,
     DEFAULT_CONSTRUCTORS,
+    Constructor,
+    ConstructorEager,
     ConstructorName,
     get_constructor,
 )
-from tests.utils import PANDAS_VERSION, ConstructorEager
+from tests.utils import PANDAS_VERSION
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
     from typing_extensions import TypeAlias
-
-    from tests.utils import Constructor
 
     Data: TypeAlias = "dict[str, list[Any]]"
 
@@ -92,7 +92,7 @@ def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
             continue  # pragma: no cover
 
         constructor = get_constructor(constructor_name)
-        if constructor.is_eager:
+        if isinstance(constructor, ConstructorEager):
             eager_constructors.append(constructor)
             eager_constructors_ids.append(str(constructor_name))
         constructors.append(constructor)

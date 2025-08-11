@@ -14,41 +14,41 @@ if TYPE_CHECKING:
 data = {"a": [1, 2, 3]}
 
 
-def _get_expected_namespace(constructor_name: str) -> Any | None:  # noqa: PLR0911
+def _get_expected_namespace(constructor: Constructor) -> Any | None:  # noqa: PLR0911
     """Get expected namespace module for a given constructor."""
-    if "pandas" in constructor_name:
+    if constructor.name.is_pandas:
         import pandas as pd
 
         return pd
-    elif "polars" in constructor_name:
+    elif "polars" in constructor.name.value:
         import polars as pl
 
         return pl
-    elif "pyarrow_table" in constructor_name:
+    elif constructor.name == "pyarrow":
         import pyarrow as pa
 
         return pa
-    elif "duckdb" in constructor_name:
+    elif constructor.name == "duckdb":
         import duckdb
 
         return duckdb
-    elif "cudf" in constructor_name:  # pragma: no cover
+    elif constructor.name == "cudf":  # pragma: no cover
         import cudf
 
         return cudf
-    elif "modin" in constructor_name:
+    elif "modin" in constructor.name.value:
         import modin.pandas as mpd
 
         return mpd
-    elif "dask" in constructor_name:
+    elif "dask" in constructor.name.value:
         import dask.dataframe as dd
 
         return dd
-    elif "ibis" in constructor_name:
+    elif constructor.name == "ibis":
         import ibis
 
         return ibis
-    elif "sqlframe" in constructor_name:
+    elif constructor.name == "sqlframe":
         import sqlframe
 
         return sqlframe
@@ -56,11 +56,10 @@ def _get_expected_namespace(constructor_name: str) -> Any | None:  # noqa: PLR09
 
 
 def test_native_namespace_frame(constructor: Constructor) -> None:
-    constructor_name = str(constructor)
-    if "pyspark" in constructor_name and "sqlframe" not in constructor_name:
+    if "pyspark" in constructor.name.value:
         pytest.skip(reason="Requires special handling for spark local vs spark connect")
 
-    expected_namespace = _get_expected_namespace(constructor_name=constructor_name)
+    expected_namespace = _get_expected_namespace(constructor=constructor)
 
     df: Frame = nw.from_native(constructor(data))
     assert nw.get_native_namespace(df) is expected_namespace
@@ -69,9 +68,7 @@ def test_native_namespace_frame(constructor: Constructor) -> None:
 
 
 def test_native_namespace_series(constructor_eager: Constructor) -> None:
-    constructor_name = constructor_eager.__name__
-
-    expected_namespace = _get_expected_namespace(constructor_name=constructor_name)
+    expected_namespace = _get_expected_namespace(constructor=constructor_eager)
 
     df: Frame = nw.from_native(constructor_eager(data), eager_only=True)
 

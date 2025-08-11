@@ -26,10 +26,6 @@ if TYPE_CHECKING:
 
     Data: TypeAlias = "dict[str, list[Any]]"
 
-Constructor: TypeAlias = Callable[[Any], "NativeLazyFrame | NativeFrame | DataFrameLike"]
-ConstructorEager: TypeAlias = Callable[[Any], "NativeFrame | DataFrameLike"]
-ConstructorLazy: TypeAlias = Callable[[Any], "NativeLazyFrame"]
-
 
 def _get_pyspark_lazy_constructor() -> Callable[
     [Data], PySparkDataFrame
@@ -112,6 +108,24 @@ class ConstructorName(str, Enum):
     SQLFRAME = "sqlframe"
     IBIS = "ibis"
 
+    @property
+    def is_pandas(self) -> bool:
+        """Check if the constructor is a Pandas constructor."""
+        return self in {
+            ConstructorName.PANDAS,
+            ConstructorName.PANDAS_PYARROW,
+            ConstructorName.PANDAS_NULLABLE,
+        }
+
+    @property
+    def needs_pyarrow(self) -> bool:
+        """Check if the constructor requires PyArrow."""
+        return self in {
+            ConstructorName.PYARROW,
+            ConstructorName.PANDAS_PYARROW,
+            ConstructorName.MODIN_PYARROW,
+        }
+
     @classmethod
     def from_pytest_request(cls, request: pytest.FixtureRequest) -> ConstructorName:
         """Get the constructor name from the pytest request."""
@@ -132,21 +146,16 @@ DEFAULT_CONSTRUCTORS = {
 
 class ConstructorBase:
     name: ConstructorName
-    is_eager: bool
     needs_gpu: bool = False
 
     def __call__(self, obj: Data) -> NativeLazyFrame | NativeFrame | DataFrameLike: ...
 
 
 class ConstructorEagerBase(ConstructorBase):
-    is_eager: bool = True
-
     def __call__(self, obj: Data) -> NativeFrame | DataFrameLike: ...
 
 
 class ConstructorLazyBase(ConstructorBase):
-    is_eager: bool = False
-
     def __call__(self, obj: Data) -> NativeLazyFrame: ...
 
 
@@ -323,3 +332,8 @@ def get_constructor(constructor_name: ConstructorName) -> ConstructorBase:
         msg = f"Constructor {constructor_name} not found."
         raise ValueError(msg)
     return ALL_CONSTRUCTORS_MAP[constructor_name]
+
+
+Constructor: TypeAlias = ConstructorBase
+ConstructorEager: TypeAlias = ConstructorEagerBase
+ConstructorLazy: TypeAlias = ConstructorLazyBase
