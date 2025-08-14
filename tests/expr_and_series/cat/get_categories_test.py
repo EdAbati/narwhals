@@ -1,10 +1,15 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pyarrow as pa
 import pytest
 
 import narwhals as nw
-from tests.utils import PYARROW_VERSION, ConstructorEager, assert_equal_data
+from tests.utils import PYARROW_VERSION, assert_equal_data
+
+if TYPE_CHECKING:
+    from tests.utils import ConstructorEager
 
 data = {"a": ["one", "two", "two"]}
 

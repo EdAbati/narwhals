@@ -2,19 +2,16 @@ from __future__ import annotations
 
 import re
 from datetime import datetime
-from typing import Any, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 import pandas as pd
 import pytest
 
 import narwhals as nw
-from tests.utils import (
-    DUCKDB_VERSION,
-    PANDAS_VERSION,
-    POLARS_VERSION,
-    Constructor,
-    assert_equal_data,
-)
+from tests.utils import DUCKDB_VERSION, PANDAS_VERSION, POLARS_VERSION, assert_equal_data
+
+if TYPE_CHECKING:
+    from tests.utils import Constructor, Data
 
 
 @pytest.mark.parametrize(
@@ -85,8 +82,8 @@ from tests.utils import (
     ],
 )
 def test_full_join(
-    df1: dict[str, list[Any]],
-    df2: dict[str, list[Any]],
+    df1: Data,
+    df2: Data,
     expected: dict[str, list[Any]],
     on: None | str | list[str],
     left_on: None | str | list[str],

@@ -1,11 +1,14 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
 import narwhals as nw
-from tests.utils import DUCKDB_VERSION, Constructor, ConstructorEager, assert_equal_data
+from tests.utils import DUCKDB_VERSION, assert_equal_data
+
+if TYPE_CHECKING:
+    from tests.utils import Constructor, ConstructorEager, Data
 
 
 @pytest.mark.parametrize(
@@ -112,9 +115,7 @@ def test_empty_scalar_reduction_with_columns(constructor: Constructor) -> None:
 
     df = nw.from_native(constructor(data)).filter(str="z")
     result = df.with_columns(**expressions)
-    expected: dict[str, list[Any]] = {
-        k: [] for k in chain(df.collect_schema(), expressions)
-    }
+    expected: Data = {k: [] for k in chain(df.collect_schema(), expressions)}
     assert_equal_data(result, expected)
 
 

@@ -14,13 +14,32 @@ import pyarrow as pa
 import narwhals as nw
 from narwhals._utils import Implementation, parse_version
 from narwhals.translate import from_native
-from tests.constructors_utils import ConstructorName
+from tests._constructors import (
+    Constructor,
+    ConstructorEager,
+    ConstructorLazy,
+    ConstructorName,
+    CudfConstructor,
+    DaskLazyConstructor,
+    Data,
+    DuckDBConstructor,
+    IbisConstructor,
+    ModinConstructor,
+    ModinPyArrowConstructor,
+    PandasConstructor,
+    PandasNullableConstructor,
+    PandasPyArrowConstructor,
+    PolarsEagerConstructor,
+    PolarsLazyConstructor,
+    PyArrowConstructor,
+    PySparkConstructor,
+    SQLFramePySparkConstructor,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Iterator, Mapping, Sequence
 
     from narwhals.typing import Frame
-    from tests.constructors_utils import Constructor, ConstructorEager
 
 
 def get_module_version_as_tuple(module_name: str) -> tuple[int, ...]:
@@ -190,3 +209,32 @@ def maybe_collect(df: Frame) -> Frame:
     if isinstance(df, nw.LazyFrame):
         return df.collect()
     return df  # pragma: no cover
+
+
+__all__ = [
+    "Constructor",
+    "ConstructorEager",
+    "ConstructorLazy",
+    "CudfConstructor",
+    "DaskLazyConstructor",
+    "Data",
+    "DuckDBConstructor",
+    "IbisConstructor",
+    "ModinConstructor",
+    "ModinPyArrowConstructor",
+    "PandasConstructor",
+    "PandasNullableConstructor",
+    "PandasPyArrowConstructor",
+    "PolarsEagerConstructor",
+    "PolarsLazyConstructor",
+    "PyArrowConstructor",
+    "PySparkConstructor",
+    "SQLFramePySparkConstructor",
+    "assert_equal_data",
+    "is_pyarrow_windows_no_tzdata",
+    "is_windows",
+    "maybe_collect",
+    "uses_pyarrow_backend",
+    "windows_has_tzdata",
+    "zip_strict",
+]

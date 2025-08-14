@@ -1,17 +1,17 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 import pytest
 
 import narwhals as nw
-from tests.utils import POLARS_VERSION, Constructor, assert_equal_data
+from tests.utils import POLARS_VERSION, assert_equal_data
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
+    from tests.utils import Constructor, Data
 
-data: Mapping[str, Any] = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.1, 8.0, 9.0]}
+data: Data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.1, 8.0, 9.0]}
 
 
 @pytest.mark.parametrize(

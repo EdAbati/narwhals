@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 import pytest
 
@@ -8,7 +8,10 @@ import pytest
 # becomes LazyFrame instead of DataFrame
 import narwhals as nw
 from narwhals.exceptions import ColumnNotFoundError
-from tests.utils import DUCKDB_VERSION, Constructor, ConstructorEager, assert_equal_data
+from tests.utils import DUCKDB_VERSION, assert_equal_data
+
+if TYPE_CHECKING:
+    from tests.utils import Constructor, ConstructorEager
 
 data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
 

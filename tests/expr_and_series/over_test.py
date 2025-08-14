@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from contextlib import nullcontext as does_not_raise
+from typing import TYPE_CHECKING
 
 import pandas as pd
 import pyarrow as pa
@@ -8,23 +9,19 @@ import pytest
 
 import narwhals as nw
 from narwhals.exceptions import InvalidOperationError
-from tests.utils import (
-    DUCKDB_VERSION,
-    PANDAS_VERSION,
-    POLARS_VERSION,
-    Constructor,
-    ConstructorEager,
-    assert_equal_data,
-)
+from tests.utils import DUCKDB_VERSION, PANDAS_VERSION, POLARS_VERSION, assert_equal_data
 
-data = {
+if TYPE_CHECKING:
+    from tests.utils import Constructor, ConstructorEager, Data
+
+data: Data = {
     "a": ["a", "a", "b", "b", "b"],
     "b": [1, 2, 3, 5, 3],
     "c": [5, 4, 3, 2, 1],
     "i": [0, 1, 2, 3, 4],
 }
 
-data_cum = {
+data_cum: Data = {
     "a": ["a", "a", "b", "b", "b"],
     "b": [1, 2, None, 5, 3],
     "c": [5, 4, 3, 2, 1],
@@ -391,7 +388,7 @@ def test_over_raise_len_change(constructor: Constructor) -> None:
 
 
 def test_unsupported_over() -> None:
-    data = {"a": [1, 2, 3, 4, 5, 6], "b": ["x", "x", "x", "y", "y", "y"]}
+    data: Data = {"a": [1, 2, 3, 4, 5, 6], "b": ["x", "x", "x", "y", "y", "y"]}
     df = pd.DataFrame(data)
     with pytest.raises(NotImplementedError, match="elementary"):
         nw.from_native(df).select(nw.col("a").shift(1).cum_sum().over("b"))
@@ -439,7 +436,7 @@ def test_over_quantile(constructor: Constructor, request: pytest.FixtureRequest)
         # cudf: https://github.com/rapidsai/cudf/issues/18159
         request.applymarker(pytest.mark.xfail)
 
-    data = {"a": [1, 2, 3, 4, 5, 6], "b": ["x", "x", "x", "y", "y", "y"]}
+    data: Data = {"a": [1, 2, 3, 4, 5, 6], "b": ["x", "x", "x", "y", "y", "y"]}
 
     quantile_expr = nw.col("a").quantile(quantile=0.5, interpolation="linear")
     native_frame = constructor(data)
@@ -472,7 +469,7 @@ def test_over_ewm_mean(
     if "pandas" in str(constructor_eager) and PANDAS_VERSION < (1, 2):
         request.applymarker(pytest.mark.xfail(reason="too old, not implemented"))
 
-    data = {"a": [0.0, 1.0, 3.0, 5.0, 7.0, 7.5], "b": [1, 1, 1, 2, 2, 2]}
+    data: Data = {"a": [0.0, 1.0, 3.0, 5.0, 7.0, 7.5], "b": [1, 1, 1, 2, 2, 2]}
 
     ewm_expr = nw.col("a").ewm_mean(com=1)
     result = (

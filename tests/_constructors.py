@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import uuid
+from abc import abstractmethod
 from copy import deepcopy
 from enum import Enum
 from functools import lru_cache
@@ -148,14 +149,17 @@ class ConstructorBase:
     name: ConstructorName
     needs_gpu: bool = False
 
+    @abstractmethod
     def __call__(self, obj: Data) -> NativeLazyFrame | NativeFrame | DataFrameLike: ...
 
 
 class ConstructorEagerBase(ConstructorBase):
+    @abstractmethod
     def __call__(self, obj: Data) -> NativeFrame | DataFrameLike: ...
 
 
 class ConstructorLazyBase(ConstructorBase):
+    @abstractmethod
     def __call__(self, obj: Data) -> NativeLazyFrame: ...
 
 
@@ -279,7 +283,7 @@ class PySparkConstructor(ConstructorLazyBase):  # pragma: no cover
         return constructor(obj)
 
 
-class SQLFramePySparkLazyConstructor(ConstructorLazyBase):  # pragma: no cover
+class SQLFramePySparkConstructor(ConstructorLazyBase):  # pragma: no cover
     name = ConstructorName.SQLFRAME
 
     def __call__(self, obj: Data) -> SQLFrameDataFrame:
@@ -313,7 +317,7 @@ ALL_CONSTRUCTORS: set[ConstructorBase] = {
     DaskLazyConstructor(),
     PyArrowConstructor(),
     PySparkConstructor(),
-    SQLFramePySparkLazyConstructor(),
+    SQLFramePySparkConstructor(),
     IbisConstructor(),
 }
 

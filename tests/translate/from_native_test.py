@@ -29,13 +29,15 @@ import pytest
 
 import narwhals as nw
 from narwhals._utils import Version
-from tests.utils import Constructor, maybe_get_modin_df
+from tests.utils import maybe_get_modin_df
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator
 
     from _pytest.mark import ParameterSet
     from typing_extensions import assert_type
+
+    from tests.utils import Constructor
 
 
 class MockDataFrame:

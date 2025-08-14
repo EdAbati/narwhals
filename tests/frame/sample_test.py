@@ -30,7 +30,7 @@ def test_sample_fraction(constructor_eager: ConstructorEager) -> None:
 
 def test_sample_with_seed(constructor_eager: ConstructorEager) -> None:
     size, n = 100, 10
-    df = nw.from_native(constructor_eager({"a": range(size)}), eager_only=True)
+    df = nw.from_native(constructor_eager({"a": list(range(size))}), eager_only=True)
 
     r1 = nw.to_native(df.sample(n=n, seed=123))
     r2 = nw.to_native(df.sample(n=n, seed=123))

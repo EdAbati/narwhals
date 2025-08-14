@@ -1,12 +1,16 @@
 from __future__ import annotations
 
 from contextlib import nullcontext as does_not_raise
+from typing import TYPE_CHECKING
 
 import pytest
 
 import narwhals as nw
 from narwhals.exceptions import ColumnNotFoundError, InvalidOperationError
-from tests.utils import Constructor, ConstructorEager, assert_equal_data
+from tests.utils import assert_equal_data
+
+if TYPE_CHECKING:
+    from tests.utils import Constructor, ConstructorEager
 
 
 def test_filter(constructor: Constructor) -> None:

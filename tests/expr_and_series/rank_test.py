@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from contextlib import nullcontext as does_not_raise
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 import pytest
 
@@ -10,16 +10,17 @@ from tests.utils import (
     DUCKDB_VERSION,
     PANDAS_VERSION,
     POLARS_VERSION,
-    Constructor,
-    ConstructorEager,
     assert_equal_data,
     is_windows,
 )
 
+if TYPE_CHECKING:
+    from tests.utils import Constructor, ConstructorEager, Data
+
 rank_methods = ["average", "min", "max", "dense", "ordinal"]
 
-data_int = {"a": [3, 6, 1, 1, None, 6], "b": [1, 1, 2, 1, 2, 2], "i": [1, 2, 3, 4, 5, 6]}
-data_float = {
+data_int: Data = {"a": [3, 6, 1, 1, None, 6], "b": [1, 1, 2, 1, 2, 2], "i": [1, 2, 3, 4, 5, 6]}
+data_float: Data = {
     "a": [3.1, 6.1, 1.5, 1.5, None, 6.1],
     "b": [1, 1, 2, 1, 2, 2],
     "i": [1, 2, 3, 4, 5, 6],

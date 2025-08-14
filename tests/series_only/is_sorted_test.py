@@ -1,9 +1,14 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
 
 import narwhals as nw
-from tests.utils import ConstructorEager, assert_equal_data
+from tests.utils import assert_equal_data
+
+if TYPE_CHECKING:
+    from tests.utils import ConstructorEager
 
 data = [1, 3, 2]
 data_dups = [4, 4, 6]
@@ -16,7 +21,7 @@ data_sorted = [7.0, 8.0, 9.0]
 )
 def test_is_sorted(
     constructor_eager: ConstructorEager,
-    input_data: str,
+    input_data: list[int | float],
     descending: bool,  # noqa: FBT001
     expected: bool,  # noqa: FBT001
 ) -> None:

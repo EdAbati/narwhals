@@ -1,18 +1,16 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
 
 import narwhals as nw
-from tests.utils import (
-    DUCKDB_VERSION,
-    PANDAS_VERSION,
-    POLARS_VERSION,
-    Constructor,
-    ConstructorEager,
-    assert_equal_data,
-)
+from tests.utils import DUCKDB_VERSION, PANDAS_VERSION, POLARS_VERSION, assert_equal_data
 
-data = {"a": [3, 1, None, 2]}
+if TYPE_CHECKING:
+    from tests.utils import Constructor, ConstructorEager, Data
+
+data: Data = {"a": [3, 1, None, 2]}
 
 expected = {"cum_min": [3, 1, None, 1], "reverse_cum_min": [1, 1, None, 2]}
 

@@ -1,9 +1,14 @@
 from __future__ import annotations
 
-import narwhals as nw
-from tests.utils import ConstructorEager, assert_equal_data
+from typing import TYPE_CHECKING
 
-data = {"a": [1, 2, 3], "b": [4, 5, 6], "z": [7.0, 8.0, 9.0]}
+import narwhals as nw
+from tests.utils import assert_equal_data
+
+if TYPE_CHECKING:
+    from tests.utils import ConstructorEager, Data
+
+data: Data = {"a": [1, 2, 3], "b": [4, 5, 6], "z": [7.0, 8.0, 9.0]}
 
 
 def test_map_batches_expr(constructor_eager: ConstructorEager) -> None:

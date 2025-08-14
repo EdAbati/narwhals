@@ -1,12 +1,16 @@
 from __future__ import annotations
 
 import re
+from typing import TYPE_CHECKING
 
 import pytest
 
 import narwhals as nw
 from narwhals.exceptions import InvalidOperationError
-from tests.utils import Constructor, ConstructorEager, assert_equal_data
+from tests.utils import assert_equal_data
+
+if TYPE_CHECKING:
+    from tests.utils import Constructor, ConstructorEager
 
 
 def test_concat_horizontal(constructor_eager: ConstructorEager) -> None:

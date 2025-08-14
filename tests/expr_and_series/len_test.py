@@ -1,11 +1,16 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import narwhals as nw
-from tests.utils import Constructor, ConstructorEager, assert_equal_data
+from tests.utils import assert_equal_data
+
+if TYPE_CHECKING:
+    from tests.utils import Constructor, ConstructorEager, Data
 
 
 def test_len_no_filter(constructor: Constructor) -> None:
-    data = {"a": list("xyz"), "b": [1, 2, None]}
+    data: Data = {"a": list("xyz"), "b": [1, 2, None]}
     expected = {"l": [3], "l2": [6], "l3": [3]}
     df = nw.from_native(constructor(data)).select(
         nw.col("a").len().alias("l"),
@@ -17,7 +22,7 @@ def test_len_no_filter(constructor: Constructor) -> None:
 
 
 def test_len_chaining(constructor_eager: ConstructorEager) -> None:
-    data = {"a": list("xyz"), "b": [1, 2, 1]}
+    data: Data = {"a": list("xyz"), "b": [1, 2, 1]}
     expected = {"a1": [2], "a2": [1]}
     df = nw.from_native(constructor_eager(data)).select(
         nw.col("a").filter(nw.col("b") == 1).len().alias("a1"),

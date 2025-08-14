@@ -7,10 +7,10 @@ from zoneinfo import ZoneInfo
 import pytest
 
 import narwhals as nw
-from tests.utils import PANDAS_VERSION, Constructor, assert_equal_data, is_windows
+from tests.utils import PANDAS_VERSION, assert_equal_data, is_windows
 
 if TYPE_CHECKING:
-    from tests.utils import ConstructorEager
+    from tests.utils import Constructor, ConstructorEager
 
 
 def test_replace_time_zone(

@@ -13,18 +13,18 @@ from tests.utils import (
     POLARS_VERSION,
     PYARROW_VERSION,
     Constructor,
-    assert_equal_data,
+    assert_equal_data,Data,
     is_windows,
 )
 
-data = {
+data: Data = {
     "a": [1, 1, 2],
     "b": ["a", "b", "c"],
     "c": [4.1, 5.0, 6.0],
     "d": [True, False, True],
 }
 
-data_regex = {"foo": ["x", "y"], "bar": [123, 456], "baz": [2.0, 5.5], "zap": [0, 1]}
+data_regex: Data = {"foo": ["x", "y"], "bar": [123, 456], "baz": [2.0, 5.5], "zap": [0, 1]}
 
 
 def test_selectors(constructor: Constructor) -> None:

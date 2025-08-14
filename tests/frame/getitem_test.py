@@ -8,10 +8,11 @@ import pandas as pd
 import pytest
 
 import narwhals as nw
-from tests.utils import ConstructorEager, assert_equal_data
+from tests.utils import assert_equal_data
 
 if TYPE_CHECKING:
     from narwhals.typing import _1DArray
+    from tests.utils import ConstructorEager
 
 data: dict[str, Any] = {
     "a": [1.0, 2.0, 3.0, 4.0, 5.0, 6.0],

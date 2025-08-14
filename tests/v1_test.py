@@ -36,7 +36,7 @@ if TYPE_CHECKING:
     from typing_extensions import assert_type
 
     from narwhals.typing import IntoDataFrameT
-    from tests.utils import Constructor, ConstructorEager
+    from tests.utils import Constructor, ConstructorEager, Data
 
 
 def test_toplevel() -> None:
@@ -411,7 +411,7 @@ def test_all_horizontal() -> None:
 
 
 def test_with_row_index(constructor: Constructor) -> None:
-    data = {"abc": ["foo", "bars"], "xyz": [100, 200], "const": [42, 42]}
+    data: Data = {"abc": ["foo", "bars"], "xyz": [100, 200], "const": [42, 42]}
 
     frame = nw_v1.from_native(constructor(data))
 

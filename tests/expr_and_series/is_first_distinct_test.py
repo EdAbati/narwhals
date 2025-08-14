@@ -1,15 +1,14 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
 
 import narwhals as nw
-from tests.utils import (
-    DUCKDB_VERSION,
-    POLARS_VERSION,
-    Constructor,
-    ConstructorEager,
-    assert_equal_data,
-)
+from tests.utils import DUCKDB_VERSION, POLARS_VERSION, assert_equal_data
+
+if TYPE_CHECKING:
+    from tests.utils import Constructor, ConstructorEager, Data
 
 data = {"a": [1, 1, 2, 3, 2], "b": [1, 2, 3, 2, 1]}
 
@@ -29,7 +28,7 @@ def test_is_first_distinct_expr_lazy(constructor: Constructor) -> None:
         pytest.skip()
     if "duckdb" in str(constructor) and DUCKDB_VERSION < (1, 3):
         pytest.skip()
-    data = {"a": [1, 1, 2, 3, 2], "b": [1, 2, 3, 2, 1], "i": [None, 1, 2, 3, 4]}
+    data: Data = {"a": [1, 1, 2, 3, 2], "b": [1, 2, 3, 2, 1], "i": [None, 1, 2, 3, 4]}
     df = nw.from_native(constructor(data))
     result = (
         df.select(nw.col("a", "b").is_first_distinct().over(order_by="i"), "i")

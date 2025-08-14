@@ -2,18 +2,20 @@ from __future__ import annotations
 
 import os
 from contextlib import nullcontext as does_not_raise
-from typing import Any
 
 import pytest
 
 import narwhals as nw
 from narwhals.exceptions import NarwhalsError
-from tests.constructors_utils import (
+from tests.utils import (
+    Constructor,
+    ConstructorEager,
     DaskLazyConstructor,
+    Data,
     ModinConstructor,
     PandasConstructor,
+    assert_equal_data,
 )
-from tests.utils import Constructor, ConstructorEager, assert_equal_data
 
 NON_NULLABLE_CONSTRUCTORS = [
     PandasConstructor(),
@@ -34,7 +36,7 @@ def test_nan(constructor: Constructor) -> None:
         float_na=nw.col("float_na").is_nan(),
     )
 
-    expected: dict[str, list[Any]]
+    expected: Data
     if any(constructor is c for c in NON_NULLABLE_CONSTRUCTORS):
         # Null values are coerced to NaN for non-nullable datatypes
         expected = {
@@ -73,7 +75,7 @@ def test_nan_series(constructor_eager: ConstructorEager) -> None:
         "float": df["float"].is_nan(),
         "float_na": df["float_na"].is_nan(),
     }
-    expected: dict[str, list[Any]]
+    expected: Data
     if any(constructor_eager is c for c in NON_NULLABLE_CONSTRUCTORS):
         # Null values are coerced to NaN for non-nullable datatypes
         expected = {

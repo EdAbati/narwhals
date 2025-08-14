@@ -7,9 +7,9 @@ import pytest
 import narwhals as nw
 
 if TYPE_CHECKING:
-    from tests.utils import ConstructorEager
+    from tests.utils import ConstructorEager, Data
 
-data = {"a": [0, 0, 2, -1], "b": [1, 3, 2, None]}
+data: Data = {"a": [0, 0, 2, -1], "b": [1, 3, 2, None]}
 
 
 @pytest.mark.parametrize(

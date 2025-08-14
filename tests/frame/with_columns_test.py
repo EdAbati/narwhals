@@ -1,18 +1,17 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
 import pandas as pd
 import pytest
 
 import narwhals as nw
 from narwhals.exceptions import ColumnNotFoundError, ShapeError
-from tests.utils import (
-    PYARROW_VERSION,
-    Constructor,
-    ConstructorEager,
-    assert_equal_data,
-    maybe_collect,
-)
+from tests.utils import PYARROW_VERSION, assert_equal_data, maybe_collect
+
+if TYPE_CHECKING:
+    from tests.utils import Constructor, ConstructorEager, Data
 
 
 def test_with_columns_int_col_name_pandas() -> None:
@@ -27,7 +26,7 @@ def test_with_columns_int_col_name_pandas() -> None:
 
 
 def test_with_columns_order(constructor: Constructor) -> None:
-    data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
+    data: Data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
     df = nw.from_native(constructor(data))
     result = df.with_columns(nw.col("a") + 1, d=nw.col("a") - 1)
     assert result.collect_schema().names() == ["a", "b", "z", "d"]
@@ -36,14 +35,14 @@ def test_with_columns_order(constructor: Constructor) -> None:
 
 
 def test_with_columns_empty(constructor_eager: ConstructorEager) -> None:
-    data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
+    data: Data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
     df = nw.from_native(constructor_eager(data))
     result = df.select().with_columns()
     assert_equal_data(result, {})
 
 
 def test_select_with_columns_empty_lazy(constructor: Constructor) -> None:
-    data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
+    data: Data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
     df = nw.from_native(constructor(data)).lazy()
     with pytest.raises(ValueError, match="At least one"):
         df.with_columns()
@@ -52,7 +51,7 @@ def test_select_with_columns_empty_lazy(constructor: Constructor) -> None:
 
 
 def test_with_columns_order_single_row(constructor: Constructor) -> None:
-    data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0], "i": [0, 1, 2]}
+    data: Data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0], "i": [0, 1, 2]}
     df = nw.from_native(constructor(data)).filter(nw.col("i") < 1).drop("i")
     result = df.with_columns(nw.col("a") + 1, d=nw.col("a") - 1)
     assert result.collect_schema().names() == ["a", "b", "z", "d"]
@@ -71,7 +70,7 @@ def test_with_columns_dtypes_single_row(
         or "ibis" in str(constructor)
     ):
         request.applymarker(pytest.mark.xfail)
-    data = {"a": ["foo"]}
+    data: Data = {"a": ["foo"]}
     df = nw.from_native(constructor(data)).with_columns(nw.col("a").cast(nw.Categorical))
     result = df.with_columns(nw.col("a"))
     assert result.collect_schema() == {"a": nw.Categorical}

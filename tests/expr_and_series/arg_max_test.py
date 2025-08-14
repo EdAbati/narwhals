@@ -1,11 +1,16 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
 
 import narwhals as nw
-from tests.utils import ConstructorEager, assert_equal_data
+from tests.utils import assert_equal_data
 
-data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0], "i": [3, 1, 5]}
+if TYPE_CHECKING:
+    from tests.utils import ConstructorEager, Data
+
+data: Data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0], "i": [3, 1, 5]}
 
 
 def test_expr_arg_max_expr(

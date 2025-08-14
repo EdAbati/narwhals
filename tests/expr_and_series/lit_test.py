@@ -8,16 +8,13 @@ import pyarrow as pa
 import pytest
 
 import narwhals as nw
-from tests.utils import (
-    CUDF_VERSION,
-    DASK_VERSION,
-    PANDAS_VERSION,
-    Constructor,
-    assert_equal_data,
-)
+from tests.utils import CUDF_VERSION, DASK_VERSION, PANDAS_VERSION, assert_equal_data
 
 if TYPE_CHECKING:
     from narwhals.dtypes import DType
+    from tests.utils import Constructor, Data
+
+data: Data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
 
 
 @pytest.mark.parametrize(
@@ -27,7 +24,6 @@ if TYPE_CHECKING:
 def test_lit(
     constructor: Constructor, dtype: DType | None, expected_lit: list[Any]
 ) -> None:
-    data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
     df_raw = constructor(data)
     df = nw.from_native(df_raw).lazy()
     result = df.with_columns(nw.lit(2, dtype).alias("lit"))
@@ -36,7 +32,6 @@ def test_lit(
 
 
 def test_lit_error(constructor: Constructor) -> None:
-    data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
     df_raw = constructor(data)
     df = nw.from_native(df_raw).lazy()
     with pytest.raises(
@@ -54,7 +49,7 @@ def test_lit_error(constructor: Constructor) -> None:
 
 
 def test_lit_out_name(constructor: Constructor) -> None:
-    data = {"a": [1, 3, 2]}
+    data: Data = {"a": [1, 3, 2]}
     df_raw = constructor(data)
     df = nw.from_native(df_raw).lazy()
     result = df.with_columns(nw.lit(2))
@@ -87,7 +82,7 @@ def test_lit_operation_in_select(
     ):
         pytest.skip()
 
-    data = {"a": [1, 3, 2]}
+    data: Data = {"a": [1, 3, 2]}
     df_raw = constructor(data)
     df = nw.from_native(df_raw).lazy()
     result = df.select(expr.alias(col_name))
@@ -105,7 +100,7 @@ def test_lit_operation_in_select(
 def test_lit_operation_in_with_columns(
     constructor: Constructor, col_name: str, expr: nw.Expr, expected_result: list[int]
 ) -> None:
-    data = {"a": [1, 3, 2]}
+    data: Data = {"a": [1, 3, 2]}
     df_raw = constructor(data)
     df = nw.from_native(df_raw).lazy()
     result = df.with_columns(expr.alias(col_name))

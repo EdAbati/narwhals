@@ -1,15 +1,20 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
 
 import narwhals as nw
-from tests.utils import DASK_VERSION, Constructor, assert_equal_data
+from tests.utils import DASK_VERSION, assert_equal_data
+
+if TYPE_CHECKING:
+    from tests.utils import Constructor, Data
 
 
 def test_expr_binary(constructor: Constructor) -> None:
     if "dask" in str(constructor) and DASK_VERSION < (2024, 10):
         pytest.skip()
-    data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
+    data: Data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
     df_raw = constructor(data)
     result = nw.from_native(df_raw).with_columns(
         a=(1 + 3 * nw.col("a")) * (1 / nw.col("a")),

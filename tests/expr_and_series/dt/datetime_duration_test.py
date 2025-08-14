@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import timedelta
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 import numpy as np
 import pyarrow as pa
@@ -9,7 +9,10 @@ import pyarrow.compute as pc
 import pytest
 
 import narwhals as nw
-from tests.utils import PANDAS_VERSION, Constructor, ConstructorEager, assert_equal_data
+from tests.utils import PANDAS_VERSION, assert_equal_data
+
+if TYPE_CHECKING:
+    from tests.utils import Constructor, ConstructorEager
 
 data = {
     "a": [None, timedelta(minutes=1, seconds=1, milliseconds=1, microseconds=1)],

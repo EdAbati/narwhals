@@ -9,8 +9,7 @@ from hypothesis import assume, given
 from hypothesis.extra.numpy import arrays
 
 import narwhals as nw
-from tests.constructors_utils import PandasConstructor, PyArrowConstructor
-from tests.utils import assert_equal_data
+from tests.utils import PandasConstructor, PyArrowConstructor, assert_equal_data
 
 if TYPE_CHECKING:
     from collections.abc import Sequence

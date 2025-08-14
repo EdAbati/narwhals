@@ -7,19 +7,13 @@ import pandas as pd
 import pytest
 
 import narwhals as nw
-from tests.utils import (
-    PANDAS_VERSION,
-    PYARROW_VERSION,
-    Constructor,
-    ConstructorEager,
-    assert_equal_data,
-    is_windows,
-)
+from tests.utils import PANDAS_VERSION, PYARROW_VERSION, assert_equal_data, is_windows
 
 if TYPE_CHECKING:
     from narwhals.typing import NativeLazyFrame
+    from tests.utils import Constructor, ConstructorEager, Data
 
-DATA = {
+DATA: Data = {
     "a": [1],
     "b": [1],
     "c": [1],

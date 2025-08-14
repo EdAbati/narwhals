@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import random
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import hypothesis.strategies as st
 import pandas as pd
@@ -10,15 +10,12 @@ import pytest
 from hypothesis import given
 
 import narwhals as nw
-from tests.utils import (
-    DUCKDB_VERSION,
-    POLARS_VERSION,
-    Constructor,
-    ConstructorEager,
-    assert_equal_data,
-)
+from tests.utils import DUCKDB_VERSION, POLARS_VERSION, assert_equal_data
 
-data = {"a": [None, 1, 2, None, 4, 6, 11]}
+if TYPE_CHECKING:
+    from tests.utils import Constructor, ConstructorEager, Data
+
+data: Data = {"a": [None, 1, 2, None, 4, 6, 11]}
 
 kwargs_and_expected: dict[str, dict[str, Any]] = {
     "x1": {"kwargs": {"window_size": 3}, "expected": [None] * 6 + [7.0]},
@@ -173,7 +170,7 @@ def test_rolling_mean_expr_lazy_ungrouped(
     if "modin" in str(constructor):
         # unreliable
         pytest.skip()
-    data = {
+    data: Data = {
         "a": [1, None, 2, None, 4, 6, 11],
         "b": [1, None, 2, 3, 4, 5, 6],
         "i": list(range(7)),

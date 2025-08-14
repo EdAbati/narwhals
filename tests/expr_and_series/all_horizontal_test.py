@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 from contextlib import nullcontext as does_not_raise
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
 import narwhals as nw
-from tests.utils import POLARS_VERSION, Constructor, ConstructorEager, assert_equal_data
+from tests.utils import POLARS_VERSION, assert_equal_data
+
+if TYPE_CHECKING:
+    from tests.utils import Constructor, ConstructorEager, Data
 
 
 def test_allh(constructor: Constructor) -> None:
@@ -23,7 +26,7 @@ def test_all_ignore_nulls(constructor: Constructor) -> None:
         # Dask infers `[True, None, None, None]` as `object` dtype, and then `__or__` fails.
         # test it below separately
         pytest.skip()
-    data = {"a": [True, True, False], "b": [True, None, None]}
+    data: Data = {"a": [True, True, False], "b": [True, None, None]}
     df = nw.from_native(constructor(data))
     result = df.select(any=nw.all_horizontal("a", "b", ignore_nulls=True))
     expected = [True, True, False]
@@ -43,7 +46,7 @@ def test_allh_kleene(constructor: Constructor, request: pytest.FixtureRequest) -
         if "pandas_constructor" in str(constructor)
         else does_not_raise()
     )
-    data = {"a": [True, True, False], "b": [True, None, None]}
+    data: Data = {"a": [True, True, False], "b": [True, None, None]}
     df = nw.from_native(constructor(data))
     with context:
         result = df.select(all=nw.all_horizontal("a", "b", ignore_nulls=False))
@@ -112,7 +115,7 @@ def test_allh_iterator(constructor: Constructor) -> None:
         for column, value in items:
             yield nw.col(column) == value
 
-    data = {"a": [1, 2, 3, 3, 3], "b": ["b", "b", "a", "a", "b"]}
+    data: Data = {"a": [1, 2, 3, 3, 3], "b": ["b", "b", "a", "a", "b"]}
     df = nw.from_native(constructor(data))
     expr_items = [("a", 3), ("b", "b")]
     expected = {"a": [3], "b": ["b"]}

@@ -7,7 +7,7 @@ import pytest
 import narwhals as nw
 
 if TYPE_CHECKING:
-    from tests.utils import Constructor
+    from tests.utils import Constructor, Data
 
 
 def test_ops_preserve_column_index_name(
@@ -21,7 +21,7 @@ def test_ops_preserve_column_index_name(
         # https://github.com/dask/dask/issues/11874
         request.applymarker(pytest.mark.xfail)
 
-    data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
+    data: Data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
     df_native = constructor(data)
     df_native.columns.name = "foo"  # type: ignore[union-attr]
 

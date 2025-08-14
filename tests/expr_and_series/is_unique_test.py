@@ -1,9 +1,14 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
 
 import narwhals as nw
-from tests.utils import DUCKDB_VERSION, Constructor, ConstructorEager, assert_equal_data
+from tests.utils import DUCKDB_VERSION, assert_equal_data
+
+if TYPE_CHECKING:
+    from tests.utils import Constructor, ConstructorEager, Data
 
 
 def test_is_unique_expr(constructor: Constructor) -> None:
@@ -37,7 +42,7 @@ def test_is_unique_w_nulls_expr(constructor: Constructor) -> None:
     if "duckdb" in str(constructor) and DUCKDB_VERSION < (1, 3):
         pytest.skip()
 
-    data = {"a": [None, 1, 2], "b": [None, 2, None], "index": [0, 1, 2]}
+    data: Data = {"a": [None, 1, 2], "b": [None, 2, None], "index": [0, 1, 2]}
     df = nw.from_native(constructor(data))
     result = df.select(nw.col("a", "b").is_unique(), "index").sort("index")
     expected = {"a": [True, True, True], "b": [False, True, False], "index": [0, 1, 2]}

@@ -8,17 +8,11 @@ import pytest
 from hypothesis import HealthCheck, given, settings
 
 import narwhals as nw
-from tests.utils import (
-    DUCKDB_VERSION,
-    PANDAS_VERSION,
-    POLARS_VERSION,
-    Constructor,
-    ConstructorEager,
-    assert_equal_data,
-)
+from tests.utils import DUCKDB_VERSION, PANDAS_VERSION, POLARS_VERSION, assert_equal_data
 
 if TYPE_CHECKING:
     from narwhals.typing import Frame
+    from tests.utils import Constructor, ConstructorEager
 
 pytest.importorskip("pandas")
 import pandas as pd

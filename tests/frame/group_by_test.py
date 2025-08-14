@@ -12,22 +12,14 @@ import pytest
 
 import narwhals as nw
 from narwhals.exceptions import ComputeError, DuplicateError, InvalidOperationError
-from tests.utils import (
-    PANDAS_VERSION,
-    POLARS_VERSION,
-    PYARROW_VERSION,
-    Constructor,
-    ConstructorEager,
-    assert_equal_data,
-)
+from tests.utils import PANDAS_VERSION, POLARS_VERSION, PYARROW_VERSION, assert_equal_data
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
-
     from narwhals.typing import NonNestedLiteral
+    from tests.utils import Constructor, ConstructorEager, Data
 
 
-data: Mapping[str, Any] = {"a": [1, 1, 3], "b": [4, 4, 6], "c": [7.0, 8.0, 9.0]}
+data: Data = {"a": [1, 1, 3], "b": [4, 4, 6], "c": [7.0, 8.0, 9.0]}
 
 df_pandas = pd.DataFrame(data)
 

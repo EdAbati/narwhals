@@ -2,22 +2,19 @@ from __future__ import annotations
 
 import warnings
 from contextlib import nullcontext as does_not_raise
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
 import narwhals as nw
-from tests.utils import (
-    DUCKDB_VERSION,
-    POLARS_VERSION,
-    Constructor,
-    ConstructorEager,
-    assert_equal_data,
-)
+from tests.utils import DUCKDB_VERSION, POLARS_VERSION, assert_equal_data
+
+if TYPE_CHECKING:
+    from tests.utils import Constructor, ConstructorEager, Data
 
 
 def test_fill_null(constructor: Constructor) -> None:
-    data = {
+    data: Data = {
         "a": [0.0, None, 2.0, 3.0, 4.0],
         "b": [1.0, None, None, 5.0, 3.0],
         "c": [5.0, None, 3.0, 2.0, 1.0],
@@ -45,7 +42,7 @@ def test_fill_null_pandas_downcast() -> None:
 
 
 def test_fill_null_series_expression(constructor: Constructor) -> None:
-    data = {
+    data: Data = {
         "a": [0.0, None, 2.0, 3.0, 4.0],
         "b": [1.0, None, None, 5.0, 3.0],
         "c": [5.0, 2.0, None, 2.0, 1.0],
@@ -88,7 +85,7 @@ def test_fill_null_strategies_with_limit_as_none(
     if "ibis" in str(constructor):
         request.applymarker(pytest.mark.xfail)
 
-    data_limits = {
+    data_limits: Data = {
         "a": [1, None, None, None, 5, 6, None, None, None, 10],
         "b": ["a", None, None, None, "b", "c", None, None, None, "d"],
         "idx": list(range(10)),
@@ -182,7 +179,7 @@ def test_fill_null_limits(
         if "modin" in str(constructor)
         else does_not_raise()
     )
-    data_limits = {
+    data_limits: Data = {
         "a": [1, None, None, None, 5, 6, None, None, None, 10],
         "b": ["a", None, None, None, "b", "c", None, None, None, "d"],
         "idx": list(range(10)),
@@ -217,7 +214,7 @@ def test_fill_null_limits(
 
 
 def test_fill_null_series(constructor_eager: ConstructorEager) -> None:
-    data_series_float = {"a": [0.0, 1, None, 2, None, 3]}
+    data_series_float: Data = {"a": [0.0, 1, None, 2, None, 3]}
     df_float = nw.from_native(constructor_eager(data_series_float), eager_only=True)
 
     expected_float = {"a_zero_digit": [0.0, 1, 0, 2, 0, 3]}
@@ -243,7 +240,7 @@ def test_fill_null_series_limits(constructor_eager: ConstructorEager) -> None:
         if "modin" in str(constructor_eager)
         else does_not_raise()
     )
-    data_series_float = {
+    data_series_float: Data = {
         "a": [0.0, 1, None, None, 2, None, None, 3],
         "b": ["", "a", None, None, "c", None, None, "e"],
     }
@@ -279,7 +276,7 @@ def test_fill_null_series_limits(constructor_eager: ConstructorEager) -> None:
 
 
 def test_fill_null_series_limit_as_none(constructor_eager: ConstructorEager) -> None:
-    data_series = {"a": [1, None, None, None, 5, 6, None, None, None, 10]}
+    data_series: Data = {"a": [1, None, None, None, 5, 6, None, None, None, 10]}
     df = nw.from_native(constructor_eager(data_series), eager_only=True)
 
     expected_forward = {
@@ -313,7 +310,9 @@ def test_fill_null_series_limit_as_none(constructor_eager: ConstructorEager) -> 
 
         assert_equal_data(result_forward, expected_forward)
 
-    data_series_str = {"a": ["a", None, None, None, "b", "c", None, None, None, "d"]}
+    data_series_str: Data = {
+        "a": ["a", None, None, None, "b", "c", None, None, None, "d"]
+    }
 
     df_str = nw.from_native(constructor_eager(data_series_str), eager_only=True)
 
@@ -350,7 +349,7 @@ def test_fill_null_series_limit_as_none(constructor_eager: ConstructorEager) -> 
 
 
 def test_fill_null_series_exceptions(constructor_eager: ConstructorEager) -> None:
-    data_series_float = {"a": [0.0, 1, None, 2, None, 3]}
+    data_series_float: Data = {"a": [0.0, 1, None, 2, None, 3]}
     df_float = nw.from_native(constructor_eager(data_series_float), eager_only=True)
 
     with pytest.raises(ValueError, match="cannot specify both `value` and `strategy`"):
@@ -381,7 +380,7 @@ def test_fill_null_strategies_with_partition_by(
         # unreliable
         pytest.skip()
 
-    data = {
+    data: Data = {
         "partition": ["A", "B", "C", "B", "A", "B", "A", "C", "C"],
         "values": [1, None, None, 2, None, 3, None, None, 4],
         "idx": list(range(9)),

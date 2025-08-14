@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 from contextlib import nullcontext as does_not_raise
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 import pytest
 
 import narwhals as nw
-from tests.utils import Constructor, ConstructorEager, assert_equal_data
+from tests.utils import assert_equal_data
+
+if TYPE_CHECKING:
+    from tests.utils import Constructor, ConstructorEager, Data
 
 
 @pytest.mark.parametrize(
@@ -33,7 +36,7 @@ def test_quantile_expr(
         request.applymarker(pytest.mark.xfail)
 
     q = 0.3
-    data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
+    data: Data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
     df_raw = constructor(data)
     df = nw.from_native(df_raw)
 

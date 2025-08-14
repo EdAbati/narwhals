@@ -6,10 +6,11 @@ import pytest
 
 import narwhals as nw
 from narwhals.exceptions import NarwhalsError
-from tests.utils import POLARS_VERSION, Constructor, ConstructorEager, assert_equal_data
+from tests.utils import POLARS_VERSION, assert_equal_data
 
 if TYPE_CHECKING:
     from narwhals.dtypes import DType
+    from tests.utils import Constructor, ConstructorEager
 
 
 @pytest.mark.skipif(

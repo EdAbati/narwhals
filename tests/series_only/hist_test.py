@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from random import Random
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import hypothesis.strategies as st
 import pandas as pd
@@ -12,7 +12,10 @@ from hypothesis import given
 
 import narwhals as nw
 from narwhals.exceptions import ComputeError
-from tests.utils import POLARS_VERSION, ConstructorEager, assert_equal_data
+from tests.utils import POLARS_VERSION, assert_equal_data
+
+if TYPE_CHECKING:
+    from tests.utils import ConstructorEager
 
 rnd = Random(0)  # noqa: S311
 

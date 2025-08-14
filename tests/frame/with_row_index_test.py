@@ -6,12 +6,14 @@ from typing import TYPE_CHECKING
 import pytest
 
 import narwhals as nw
-from tests.utils import PANDAS_VERSION, Constructor, ConstructorEager, assert_equal_data
+from tests.utils import PANDAS_VERSION, assert_equal_data
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-data = {"abc": ["foo", "bars"], "xyz": [100, 200], "const": [42, 42]}
+    from tests.utils import Constructor, ConstructorEager, Data
+
+data: Data = {"abc": ["foo", "bars"], "xyz": [100, 200], "const": [42, 42]}
 
 
 def test_with_row_index_eager(constructor_eager: ConstructorEager) -> None:

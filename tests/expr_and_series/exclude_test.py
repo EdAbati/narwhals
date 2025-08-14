@@ -8,7 +8,7 @@ import narwhals as nw
 from tests.utils import assert_equal_data
 
 if TYPE_CHECKING:
-    from tests.utils import Constructor
+    from tests.utils import Constructor, Data
 
 
 @pytest.mark.parametrize(
@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 def test_exclude(
     constructor: Constructor, exclude_selector: nw.Expr, expected_cols: list[str]
 ) -> None:
-    data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
+    data: Data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
 
     df = nw.from_native(constructor(data))
     result = df.select(exclude_selector)

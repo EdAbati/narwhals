@@ -1,14 +1,18 @@
 from __future__ import annotations
 
-from typing import Callable
+from typing import TYPE_CHECKING, Callable
 
 import pyarrow as pa
 import pytest
 
 import narwhals as nw
-from tests.utils import POLARS_VERSION, Constructor, assert_equal_data
+from tests.utils import POLARS_VERSION, assert_equal_data
 
-data = {"a": [1, 2, 3], "b": ["dogs", "cats", None], "c": ["play", "swim", "walk"]}
+if TYPE_CHECKING:
+    from tests.utils import Constructor, Data
+
+
+data: Data = {"a": [1, 2, 3], "b": ["dogs", "cats", None], "c": ["play", "swim", "walk"]}
 
 
 @pytest.mark.parametrize(

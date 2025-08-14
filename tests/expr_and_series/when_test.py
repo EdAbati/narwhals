@@ -7,10 +7,11 @@ import pytest
 
 import narwhals as nw
 from narwhals.exceptions import InvalidOperationError, MultiOutputExpressionError
-from tests.utils import Constructor, ConstructorEager, assert_equal_data
+from tests.utils import assert_equal_data
 
 if TYPE_CHECKING:
     from narwhals.typing import _1DArray
+    from tests.utils import Constructor, ConstructorEager
 
 data = {
     "a": [1, 2, 3],

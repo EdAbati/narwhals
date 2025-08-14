@@ -1,13 +1,17 @@
 from __future__ import annotations
 
 from importlib.util import find_spec
+from typing import TYPE_CHECKING
 
 import pandas as pd
 import pytest
 
 import narwhals as nw
 from narwhals._utils import Implementation
-from tests.utils import Constructor, assert_equal_data
+from tests.utils import assert_equal_data
+
+if TYPE_CHECKING:
+    from tests.utils import Constructor
 
 TEST_EAGER_BACKENDS: list[Implementation | str] = []
 TEST_EAGER_BACKENDS.extend(
