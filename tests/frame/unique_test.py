@@ -13,7 +13,10 @@ from tests.utils import DUCKDB_VERSION, assert_equal_data
 if TYPE_CHECKING:
     from tests.utils import Constructor, ConstructorEager
 
-data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
+if TYPE_CHECKING:
+    from tests.utils import Data
+
+data: Data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
 
 
 @pytest.mark.parametrize("subset", ["b", ["b"]])

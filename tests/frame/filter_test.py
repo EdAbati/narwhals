@@ -10,11 +10,11 @@ from narwhals.exceptions import ColumnNotFoundError, InvalidOperationError
 from tests.utils import assert_equal_data
 
 if TYPE_CHECKING:
-    from tests.utils import Constructor, ConstructorEager
+    from tests.utils import Constructor, ConstructorEager, Data
 
 
 def test_filter(constructor: Constructor) -> None:
-    data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
+    data: Data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
     df = nw.from_native(constructor(data))
     result = df.filter(nw.col("a") > 1)
     expected = {"a": [3, 2], "b": [4, 6], "z": [8.0, 9.0]}
@@ -22,7 +22,7 @@ def test_filter(constructor: Constructor) -> None:
 
 
 def test_filter_with_series(constructor_eager: ConstructorEager) -> None:
-    data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
+    data: Data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
     df = nw.from_native(constructor_eager(data), eager_only=True)
     result = df.filter(df["a"] > 1)
     expected = {"a": [3, 2], "b": [4, 6], "z": [8.0, 9.0]}
@@ -30,7 +30,7 @@ def test_filter_with_series(constructor_eager: ConstructorEager) -> None:
 
 
 def test_filter_with_boolean_list(constructor: Constructor) -> None:
-    data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
+    data: Data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
     df = nw.from_native(constructor(data))
     context = (
         pytest.raises(TypeError, match="not supported")
@@ -44,21 +44,21 @@ def test_filter_with_boolean_list(constructor: Constructor) -> None:
 
 
 def test_filter_raise_on_agg_predicate(constructor: Constructor) -> None:
-    data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
+    data: Data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
     df = nw.from_native(constructor(data))
     with pytest.raises(InvalidOperationError):
         df.filter(nw.col("a").max() > 2).lazy().collect()
 
 
 def test_filter_raise_on_shape_mismatch(constructor: Constructor) -> None:
-    data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
+    data: Data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
     df = nw.from_native(constructor(data))
     with pytest.raises(InvalidOperationError):
         df.filter(nw.col("b").unique() > 2).lazy().collect()
 
 
 def test_filter_with_constrains(constructor: Constructor) -> None:
-    data = {"a": [1, 3, 2], "b": [4, 4, 6]}
+    data: Data = {"a": [1, 3, 2], "b": [4, 4, 6]}
     df = nw.from_native(constructor(data))
     result_scalar = df.filter(a=3)
     expected_scalar = {"a": [3], "b": [4]}
@@ -77,7 +77,7 @@ def test_filter_missing_column(
     constructor_id = str(request.node.callspec.id)
     if any(id_ == constructor_id for id_ in ("sqlframe", "pyspark[connect]", "ibis")):
         request.applymarker(pytest.mark.xfail)
-    data = {"a": [1, 2], "b": [3, 4]}
+    data: Data = {"a": [1, 2], "b": [3, 4]}
     df = nw.from_native(constructor(data))
 
     if "polars" in str(constructor):

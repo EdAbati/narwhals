@@ -9,7 +9,7 @@ import narwhals as nw
 from tests.utils import assert_equal_data
 
 if TYPE_CHECKING:
-    from tests.utils import ConstructorEager
+    from tests.utils import ConstructorEager, Data
 
 
 @pytest.mark.parametrize(("row", "column", "expected"), [(0, 2, 7), (1, "z", 8)])
@@ -19,7 +19,7 @@ def test_item(
     column: int | str | None,
     expected: Any,
 ) -> None:
-    data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
+    data: Data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
     df = nw.from_native(constructor_eager(data), eager_only=True)
     assert_equal_data({"a": [df.item(row, column)]}, {"a": [expected]})
     assert_equal_data({"a": [df.select("a").head(1).item()]}, {"a": [1]})
@@ -43,6 +43,6 @@ def test_item_value_error(
     column: int | str | None,
     err_msg: str,
 ) -> None:
-    data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
+    data: Data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
     with pytest.raises(ValueError, match=err_msg):
         nw.from_native(constructor_eager(data), eager_only=True).item(row, column)

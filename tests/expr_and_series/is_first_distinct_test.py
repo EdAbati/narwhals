@@ -10,7 +10,7 @@ from tests.utils import DUCKDB_VERSION, POLARS_VERSION, assert_equal_data
 if TYPE_CHECKING:
     from tests.utils import Constructor, ConstructorEager, Data
 
-data = {"a": [1, 1, 2, 3, 2], "b": [1, 2, 3, 2, 1]}
+data: Data = {"a": [1, 1, 2, 3, 2], "b": [1, 2, 3, 2, 1]}
 
 
 def test_is_first_distinct_expr(constructor_eager: ConstructorEager) -> None:
@@ -51,7 +51,7 @@ def test_is_first_distinct_expr_lazy_grouped(
         pytest.skip()
     if any(x in str(constructor) for x in ("dask", "pandas", "pyarrow", "cudf", "modin")):
         request.applymarker(pytest.mark.xfail)
-    data = {"a": [1, 1, 2, 2, 2], "b": [1, 3, 3, 2, 3], "i": [0, 1, 2, 3, 4]}
+    data: Data = {"a": [1, 1, 2, 2, 2], "b": [1, 3, 3, 2, 3], "i": [0, 1, 2, 3, 4]}
     df = nw.from_native(constructor(data))
     result = (
         df.select(nw.col("b").is_first_distinct().over("a", order_by="i"), "i")

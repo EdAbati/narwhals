@@ -12,7 +12,9 @@ from tests.utils import POLARS_VERSION, assert_equal_data
 if TYPE_CHECKING:
     from tests.utils import ConstructorEager
 
-data = {
+from tests.utils import Data
+
+data: Data = {
     "ix": [1, 2, 1, 1, 2, 2],
     "iy": [1, 2, 2, 1, 2, 1],
     "col": ["b", "b", "a", "a", "a", "a"],
@@ -21,7 +23,7 @@ data = {
     "bar": [9, 4, 0, 2, 0, 0],
 }
 
-data_no_dups = {
+data_no_dups: Data = {
     "ix": [1, 1, 2, 2],
     "col": ["a", "b", "a", "b"],
     "foo": [1, 2, 3, 4],

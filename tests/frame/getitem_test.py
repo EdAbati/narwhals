@@ -12,12 +12,9 @@ from tests.utils import assert_equal_data
 
 if TYPE_CHECKING:
     from narwhals.typing import _1DArray
-    from tests.utils import ConstructorEager
+    from tests.utils import ConstructorEager, Data
 
-data: dict[str, Any] = {
-    "a": [1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
-    "b": [11, 12, 13, 14, 15, 16],
-}
+data: Data = {"a": [1.0, 2.0, 3.0, 4.0, 5.0, 6.0], "b": [11, 12, 13, 14, 15, 16]}
 
 
 def test_slice_column(constructor_eager: ConstructorEager) -> None:
@@ -47,14 +44,15 @@ def test_slice_rows_with_step_pyarrow() -> None:
     pytest.importorskip("pyarrow")
     import pyarrow as pa
 
+    data_ = cast("dict[str, Any]", data)
     with pytest.raises(
         NotImplementedError, match="Slicing with step is not supported on PyArrow tables"
     ):
-        nw.from_native(pa.table(data))[1::2]
+        nw.from_native(pa.table(data_))[1::2]
     with pytest.raises(
         NotImplementedError, match="Slicing with step is not supported on PyArrow tables"
     ):
-        nw.from_native(pa.chunked_array([data["a"]]), series_only=True)[1::2]
+        nw.from_native(pa.chunked_array([data_["a"]]), series_only=True)[1::2]
 
 
 def test_slice_lazy_fails() -> None:
@@ -113,7 +111,7 @@ def test_gather_rows_cols(constructor_eager: ConstructorEager) -> None:
 
 
 def test_slice_both_list_of_ints(constructor_eager: ConstructorEager) -> None:
-    data = {"a": [1, 2, 3], "b": [4, 5, 6], "c": [7, 8, 9]}
+    data: Data = {"a": [1, 2, 3], "b": [4, 5, 6], "c": [7, 8, 9]}
     df = nw.from_native(constructor_eager(data), eager_only=True)
     result = df[[0, 1], [0, 2]]
     expected = {"a": [1, 2], "c": [7, 8]}
@@ -126,7 +124,7 @@ def test_slice_both_tuple(
     if "cudf" in str(constructor_eager):
         # https://github.com/rapidsai/cudf/issues/18556
         request.applymarker(pytest.mark.xfail)
-    data = {"a": [1, 2, 3], "b": [4, 5, 6], "c": [7, 8, 9]}
+    data: Data = {"a": [1, 2, 3], "b": [4, 5, 6], "c": [7, 8, 9]}
     df = nw.from_native(constructor_eager(data), eager_only=True)
     result = df[(0, 1), ("a", "c")]
     expected = {"a": [1, 2], "c": [7, 8]}
@@ -134,7 +132,7 @@ def test_slice_both_tuple(
 
 
 def test_slice_int_rows_str_columns(constructor_eager: ConstructorEager) -> None:
-    data = {"a": [1, 2, 3], "b": [4, 5, 6], "c": [7, 8, 9]}
+    data: Data = {"a": [1, 2, 3], "b": [4, 5, 6], "c": [7, 8, 9]}
     df = nw.from_native(constructor_eager(data), eager_only=True)
     result = df[[0, 1], ["a", "c"]]
     expected = {"a": [1, 2], "c": [7, 8]}
@@ -177,20 +175,20 @@ def test_slice_slice_columns(
     col_selector: Any,
     expected: dict[str, list[Any]],
 ) -> None:
-    data = {"a": [1, 2, 3], "b": [4, 5, 6], "c": [7, 8, 9], "d": [1, 4, 2]}
+    data: Data = {"a": [1, 2, 3], "b": [4, 5, 6], "c": [7, 8, 9], "d": [1, 4, 2]}
     df = nw.from_native(constructor_eager(data), eager_only=True)
     result = df[row_selector] if col_selector is None else df[row_selector, col_selector]
     assert_equal_data(result, expected)
 
 
 def test_slice_item(constructor_eager: ConstructorEager) -> None:
-    data = {"a": [1, 2], "b": [4, 5]}
+    data: Data = {"a": [1, 2], "b": [4, 5]}
     df = nw.from_native(constructor_eager(data), eager_only=True)
     assert df[0, 0] == 1
 
 
 def test_slice_edge_cases(constructor_eager: ConstructorEager) -> None:
-    data = {"a": [1, 2, 3], "b": [4, 5, 6], "c": [7, 8, 9], "d": [1, 4, 2]}
+    data: Data = {"a": [1, 2, 3], "b": [4, 5, 6], "c": [7, 8, 9], "d": [1, 4, 2]}
     df = nw.from_native(constructor_eager(data), eager_only=True)
     assert df[[], :].shape == (0, 4)
     assert df[:, []].shape == (0, 0)
@@ -284,7 +282,7 @@ def test_zeroth_row_no_columns(constructor_eager: ConstructorEager) -> None:
 
 
 def test_single_tuple(constructor_eager: ConstructorEager) -> None:
-    data = {"a": [1, 2, 3]}
+    data: Data = {"a": [1, 2, 3]}
     nw_df = nw.from_native(constructor_eager(data), eager_only=True)
     # Technically works but we should probably discourage it
     # OK if overloads don't match it.
@@ -294,7 +292,7 @@ def test_single_tuple(constructor_eager: ConstructorEager) -> None:
 
 
 def test_triple_tuple(constructor_eager: ConstructorEager) -> None:
-    data = {"a": [1, 2, 3]}
+    data: Data = {"a": [1, 2, 3]}
     with pytest.raises(TypeError, match="Tuples cannot"):
         nw.from_native(constructor_eager(data), eager_only=True)[(1, 2, 3)]
 
@@ -305,7 +303,7 @@ def test_slice_with_series(
     if "pandas_pyarrow" in str(constructor_eager):
         # https://github.com/pandas-dev/pandas/issues/61311
         request.applymarker(pytest.mark.xfail)
-    data = {"a": [1, 2, 3], "c": [0, 2, 1]}
+    data: Data = {"a": [1, 2, 3], "c": [0, 2, 1]}
     nw_df = nw.from_native(constructor_eager(data), eager_only=True)
     result = nw_df[nw_df["c"]]
     expected = {"a": [1, 3, 2], "c": [0, 1, 2]}
@@ -316,7 +314,7 @@ def test_slice_with_series(
 
 
 def test_horizontal_slice_with_series(constructor_eager: ConstructorEager) -> None:
-    data = {"a": [1, 2], "c": [0, 2], "d": ["c", "a"]}
+    data: Data = {"a": [1, 2], "c": [0, 2], "d": ["c", "a"]}
     nw_df = nw.from_native(constructor_eager(data), eager_only=True)
     result = nw_df[nw_df["d"]]
     expected = {"c": [0, 2], "a": [1, 2]}
@@ -329,7 +327,7 @@ def test_horizontal_slice_with_series_2(
     if "pandas_pyarrow" in str(constructor_eager):
         # https://github.com/pandas-dev/pandas/issues/61311
         request.applymarker(pytest.mark.xfail)
-    data = {"a": [1, 2], "c": [0, 2], "d": ["c", "a"]}
+    data: Data = {"a": [1, 2], "c": [0, 2], "d": ["c", "a"]}
     nw_df = nw.from_native(constructor_eager(data), eager_only=True)
     result = nw_df[:, nw_df["c"]]
     expected = {"a": [1, 2], "d": ["c", "a"]}

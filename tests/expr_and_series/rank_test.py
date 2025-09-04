@@ -19,7 +19,11 @@ if TYPE_CHECKING:
 
 rank_methods = ["average", "min", "max", "dense", "ordinal"]
 
-data_int: Data = {"a": [3, 6, 1, 1, None, 6], "b": [1, 1, 2, 1, 2, 2], "i": [1, 2, 3, 4, 5, 6]}
+data_int: Data = {
+    "a": [3, 6, 1, 1, None, 6],
+    "b": [1, 1, 2, 1, 2, 2],
+    "i": [1, 2, 3, 4, 5, 6],
+}
 data_float: Data = {
     "a": [3.1, 6.1, 1.5, 1.5, None, 6.1],
     "b": [1, 1, 2, 1, 2, 2],

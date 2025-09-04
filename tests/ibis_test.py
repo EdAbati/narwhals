@@ -5,7 +5,8 @@ from typing import TYPE_CHECKING
 import pytest
 
 import narwhals as nw
-from tests._constructors import ConstructorLazyBase, Constructor, ConstructorName, Data
+from tests._constructors import Constructor, ConstructorLazyBase, ConstructorName, Data
+
 if TYPE_CHECKING:
     import ibis
     import polars as pl

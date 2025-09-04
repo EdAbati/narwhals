@@ -10,7 +10,9 @@ from tests.utils import assert_equal_data
 if TYPE_CHECKING:
     from tests.utils import Constructor
 
-data = {"alpha": [1.0, 2.0, None, 4.0], "beta gamma": [None, 3.0, None, 5.0]}
+from tests.utils import Data
+
+data: Data = {"alpha": [1.0, 2.0, None, 4.0], "beta gamma": [None, 3.0, None, 5.0]}
 
 
 def test_drop_nulls(constructor: Constructor) -> None:

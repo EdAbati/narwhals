@@ -5,11 +5,11 @@ from typing import TYPE_CHECKING
 import narwhals as nw
 
 if TYPE_CHECKING:
-    from tests.utils import Constructor
+    from tests.utils import Constructor, Data
 
 
 def test_to_native(constructor: Constructor) -> None:
-    data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.1, 8.0, 9.0]}
+    data: Data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.1, 8.0, 9.0]}
     df_raw = constructor(data)
     df = nw.from_native(df_raw)
 

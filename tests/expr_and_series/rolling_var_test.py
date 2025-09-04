@@ -12,12 +12,12 @@ from tests.utils import DUCKDB_VERSION, PANDAS_VERSION, POLARS_VERSION, assert_e
 
 if TYPE_CHECKING:
     from narwhals.typing import Frame
-    from tests.utils import Constructor, ConstructorEager
+    from tests.utils import Constructor, ConstructorEager, Data
 
 pytest.importorskip("pandas")
 import pandas as pd
 
-data = {"a": [1.0, 2.0, 1.0, 3.0, 1.0, 4.0, 1.0]}
+data: Data = {"a": [1.0, 2.0, 1.0, 3.0, 1.0, 4.0, 1.0]}
 
 kwargs_and_expected = (
     {
@@ -206,7 +206,7 @@ def test_rolling_var_expr_lazy_ungrouped(
     if "dask" in str(constructor) and ddof != 1:
         # Only `ddof=1` is supported
         pytest.skip()
-    data = {
+    data: Data = {
         "a": [1, None, 2, None, 4, 6, 11],
         "b": [1, None, 2, 3, 4, 5, 6],
         "i": list(range(7)),
@@ -272,7 +272,7 @@ def test_rolling_var_expr_lazy_grouped(
     if "modin" in str(constructor):
         # unreliable
         pytest.skip()
-    data = {
+    data: Data = {
         "a": [1, None, 2, None, 4, 6, 11],
         "g": [1, 1, 1, 1, 2, 2, 2],
         "b": [1, None, 2, 3, 4, 5, 6],

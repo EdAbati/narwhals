@@ -11,11 +11,11 @@ from tests.utils import PANDAS_VERSION, POLARS_VERSION, assert_equal_data
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-    from tests.utils import Constructor
+    from tests.utils import Constructor, Data
 
 # For context, polars allows to explode multiple columns only if the columns
 # have matching element counts, therefore, l1 and l2 but not l1 and l3 together.
-data = {
+data: Data = {
     "a": ["x", "y", "z", "w"],
     "l1": [[1, 2], None, [None], []],
     "l2": [[3, None], None, [42], []],

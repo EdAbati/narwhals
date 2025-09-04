@@ -18,7 +18,9 @@ class Foo: ...
 
 
 def test_select(constructor: Constructor) -> None:
-    data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
+    from tests.utils import Data
+
+    data: Data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
     df = nw.from_native(constructor(data))
     result = df.select("a")
     expected = {"a": [1, 3, 2]}
@@ -87,7 +89,9 @@ def test_missing_columns(
         # `sqlframe` raises a different error depending on its underlying backend
         request.applymarker(pytest.mark.xfail)
 
-    data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
+    from tests.utils import Data
+
+    data: Data = {"a": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
     df = nw.from_native(constructor(data))
     selected_columns = ["a", "e", "f"]
 

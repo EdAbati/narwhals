@@ -12,7 +12,9 @@ if TYPE_CHECKING:
 
 
 def test_sort(constructor: Constructor) -> None:
-    data = {"an tan": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
+    from tests.utils import Data
+
+    data: Data = {"an tan": [1, 3, 2], "b": [4, 4, 6], "z": [7.0, 8.0, 9.0]}
     df = nw.from_native(constructor(data))
     result = df.sort("an tan", "b")
     expected = {"an tan": [1, 2, 3], "b": [4, 6, 4], "z": [7.0, 9.0, 8.0]}
@@ -32,7 +34,9 @@ def test_sort(constructor: Constructor) -> None:
 def test_sort_nulls(
     constructor: Constructor, *, nulls_last: bool, expected: dict[str, float]
 ) -> None:
-    data = {"antan desc": [0, 0, 2, -1], "b": [1, 3, 2, None]}
+    from tests.utils import Data
+
+    data: Data = {"antan desc": [0, 0, 2, -1], "b": [1, 3, 2, None]}
     df = nw.from_native(constructor(data))
     result = df.sort("b", descending=True, nulls_last=nulls_last)
     assert_equal_data(result, expected)

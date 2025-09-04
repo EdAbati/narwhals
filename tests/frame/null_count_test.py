@@ -10,7 +10,9 @@ if TYPE_CHECKING:
 
 
 def test_null_count(constructor_eager: ConstructorEager) -> None:
-    data = {"a": [None, 3, 2], "b": [4, 4, 6], "z": [7.0, None, 9]}
+    from tests.utils import Data
+
+    data: Data = {"a": [None, 3, 2], "b": [4, 4, 6], "z": [7.0, None, 9]}
     df_raw = constructor_eager(data)
     df = nw.from_native(df_raw, eager_only=True)
     result = df.null_count()

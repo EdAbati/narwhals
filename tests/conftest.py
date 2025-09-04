@@ -6,13 +6,11 @@ from typing import TYPE_CHECKING, Any, cast
 import pytest
 
 from tests._constructors import (
-    ALL_CPU_CONSTRUCTORS,DEFAULT_CONSTRUCTORS,get_constructor)
-from tests.utils import (
-    PANDAS_VERSION,
-    Constructor,
-    ConstructorEager,
-    ConstructorName
+    ALL_CPU_CONSTRUCTORS,
+    DEFAULT_CONSTRUCTORS,
+    get_constructor,
 )
+from tests.utils import PANDAS_VERSION, Constructor, ConstructorEager, ConstructorName
 
 if TYPE_CHECKING:
     from collections.abc import Sequence

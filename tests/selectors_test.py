@@ -13,7 +13,8 @@ from tests.utils import (
     POLARS_VERSION,
     PYARROW_VERSION,
     Constructor,
-    assert_equal_data,Data,
+    Data,
+    assert_equal_data,
     is_windows,
 )
 
@@ -24,7 +25,12 @@ data: Data = {
     "d": [True, False, True],
 }
 
-data_regex: Data = {"foo": ["x", "y"], "bar": [123, 456], "baz": [2.0, 5.5], "zap": [0, 1]}
+data_regex: Data = {
+    "foo": ["x", "y"],
+    "bar": [123, 456],
+    "baz": [2.0, 5.5],
+    "zap": [0, 1],
+}
 
 
 def test_selectors(constructor: Constructor) -> None:
@@ -96,7 +102,9 @@ def test_datetime(constructor: Constructor, request: pytest.FixtureRequest) -> N
     ts1 = datetime(2000, 11, 20, 18, 12, 16, 600000)
     ts2 = datetime(2020, 10, 30, 10, 20, 25, 123000)
 
-    data = {"numeric": [3.14, 6.28], "ts": [ts1, ts2]}
+    data: Data = {"numeric": [3.14, 6.28], "ts": [ts1, ts2]}
+
+    data: Data = {"numeric": [3.14, 6.28], "ts": [ts1, ts2]}
     time_units: list[Literal["ns", "us", "ms", "s"]] = ["ms", "us", "ns"]
 
     df = nw.from_native(constructor(data)).select(
@@ -185,7 +193,7 @@ def test_datetime_no_tz(constructor: Constructor) -> None:
     ts1 = datetime(2000, 11, 20, 18, 12, 16, 600000)
     ts2 = datetime(2020, 10, 30, 10, 20, 25, 123000)
 
-    data = {"numeric": [3.14, 6.28], "ts": [ts1, ts2]}
+    data: Data = {"numeric": [3.14, 6.28], "ts": [ts1, ts2]}
 
     df = nw.from_native(constructor(data))
     assert df.select(ncs.datetime()).collect_schema().names() == ["ts"]
@@ -263,7 +271,7 @@ def test_tz_aware(constructor: Constructor, request: pytest.FixtureRequest) -> N
         # replace_time_zone not implemented
         request.applymarker(pytest.mark.xfail)
 
-    data = {"a": [datetime(2020, 1, 1), datetime(2020, 1, 2)], "c": [4, 5]}
+    data: Data = {"a": [datetime(2020, 1, 1), datetime(2020, 1, 2)], "c": [4, 5]}
     df = nw.from_native(constructor(data)).with_columns(
         b=nw.col("a").dt.replace_time_zone("Asia/Katmandu")
     )

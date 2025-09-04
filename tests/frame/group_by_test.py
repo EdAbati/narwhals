@@ -126,7 +126,7 @@ def test_group_by_depth_1_agg(
         pytest.skip(
             "Known issue with variance calculation in pandas 2.0.x with pyarrow backend in groupby operations"
         )
-    data = {"a": [1, 1, 1, 2], "b": [1, None, 2, 3]}
+    data: Data = {"a": [1, 1, 1, 2], "b": [1, None, 2, 3]}
     expr = getattr(nw.col("b"), attr)()
     result = nw.from_native(constructor(data)).group_by("a").agg(expr).sort("a")
     assert_equal_data(result, expected)
@@ -155,7 +155,7 @@ def test_group_by_depth_1_agg_bool_ops(
     if ("dask-nullable" in request.node.callspec.id) or ("cudf" in str(constructor)):
         request.applymarker(pytest.mark.xfail(strict=True))
 
-    data = {"a": [1, 1, 2, 2, 3, 3], **values}
+    data: Data = {"a": [1, 1, 2, 2, 3, 3], **values}
     result = (
         nw.from_native(constructor(data))
         .group_by("a")
@@ -169,7 +169,7 @@ def test_group_by_depth_1_agg_bool_ops(
     ("attr", "ddof"), [("std", 0), ("var", 0), ("std", 2), ("var", 2)]
 )
 def test_group_by_depth_1_std_var(constructor: Constructor, attr: str, ddof: int) -> None:
-    data = {"a": [1, 1, 1, 2, 2, 2], "b": [4, 5, 6, 0, 5, 5]}
+    data: Data = {"a": [1, 1, 1, 2, 2, 2], "b": [4, 5, 6, 0, 5, 5]}
     _pow = 0.5 if attr == "std" else 1
     expected = {
         "a": [1, 2],
@@ -184,7 +184,7 @@ def test_group_by_depth_1_std_var(constructor: Constructor, attr: str, ddof: int
 
 
 def test_group_by_median(constructor: Constructor) -> None:
-    data = {"a": [1, 1, 1, 2, 2, 2], "b": [5, 4, 6, 7, 3, 2]}
+    data: Data = {"a": [1, 1, 1, 2, 2, 2], "b": [5, 4, 6, 7, 3, 2]}
     result = (
         nw.from_native(constructor(data))
         .group_by("a")
@@ -196,7 +196,7 @@ def test_group_by_median(constructor: Constructor) -> None:
 
 
 def test_group_by_n_unique_w_missing(constructor: Constructor) -> None:
-    data = {"a": [1, 1, 2], "b": [4, None, 5], "c": [None, None, 7], "d": [1, 1, 3]}
+    data: Data = {"a": [1, 1, 2], "b": [4, None, 5], "c": [None, None, 7], "d": [1, 1, 3]}
     result = (
         nw.from_native(constructor(data))
         .group_by("a")
@@ -237,7 +237,7 @@ def test_group_by_empty_result_pandas() -> None:
 
 
 def test_group_by_simple_named(constructor: Constructor) -> None:
-    data = {"a": [1, 1, 2], "b": [4, 5, 6], "c": [7, 2, 1]}
+    data: Data = {"a": [1, 1, 2], "b": [4, 5, 6], "c": [7, 2, 1]}
     df = nw.from_native(constructor(data)).lazy()
     result = (
         df.group_by("a").agg(b_min=nw.col("b").min(), b_max=nw.col("b").max()).sort("a")
@@ -247,7 +247,7 @@ def test_group_by_simple_named(constructor: Constructor) -> None:
 
 
 def test_group_by_simple_unnamed(constructor: Constructor) -> None:
-    data = {"a": [1, 1, 2], "b": [4, 5, 6], "c": [7, 2, 1]}
+    data: Data = {"a": [1, 1, 2], "b": [4, 5, 6], "c": [7, 2, 1]}
     df = nw.from_native(constructor(data)).lazy()
     result = df.group_by("a").agg(nw.col("b").min(), nw.col("c").max()).sort("a")
     expected = {"a": [1, 2], "b": [4, 6], "c": [7, 1]}
@@ -255,7 +255,7 @@ def test_group_by_simple_unnamed(constructor: Constructor) -> None:
 
 
 def test_group_by_multiple_keys(constructor: Constructor) -> None:
-    data = {"a": [1, 1, 2], "b": [4, 4, 6], "c": [7, 2, 1]}
+    data: Data = {"a": [1, 1, 2], "b": [4, 4, 6], "c": [7, 2, 1]}
     df = nw.from_native(constructor(data)).lazy()
     result = (
         df.group_by("a", "b")
@@ -270,7 +270,7 @@ def test_key_with_nulls(constructor: Constructor, request: pytest.FixtureRequest
     if "modin" in str(constructor):
         request.applymarker(pytest.mark.xfail(reason="Modin flaky here", strict=False))
 
-    data = {"b": [4, 5, None], "a": [1, 2, 3]}
+    data: Data = {"b": [4, 5, None], "a": [1, 2, 3]}
     result = (
         nw.from_native(constructor(data))
         .group_by("b")
@@ -283,7 +283,7 @@ def test_key_with_nulls(constructor: Constructor, request: pytest.FixtureRequest
 
 
 def test_key_with_nulls_ignored(constructor: Constructor) -> None:
-    data = {"b": [4, 5, None], "a": [1, 2, 3]}
+    data: Data = {"b": [4, 5, None], "a": [1, 2, 3]}
     result = (
         nw.from_native(constructor(data))
         .group_by("b", drop_null_keys=True)
@@ -296,7 +296,7 @@ def test_key_with_nulls_ignored(constructor: Constructor) -> None:
 
 
 def test_key_with_nulls_iter(constructor_eager: ConstructorEager) -> None:
-    data = {
+    data: Data = {
         "b": [None, "4", "5", None, "7"],
         "a": [None, 1, 2, 3, 4],
         "c": [None, "4", "3", None, None],
@@ -496,7 +496,11 @@ def test_group_by_expr(
     expected: dict[str, list[Any]],
     sort_by: list[str],
 ) -> None:
-    data = {"a": [1, 1, 2, 2, -1], "x": [0, 1, 2, 3, 4], "y": [0.5, -0.5, 1.0, -1.0, 1.5]}
+    data: Data = {
+        "a": [1, 1, 2, 2, -1],
+        "x": [0, 1, 2, 3, 4],
+        "y": [0.5, -0.5, 1.0, -1.0, 1.5],
+    }
     df = nw.from_native(constructor(data))
     result = df.group_by(*keys).agg(*aggs).sort(*sort_by)
     assert_equal_data(result, expected)
@@ -525,7 +529,7 @@ def test_group_by_expr(
 def test_group_by_raise_if_not_elementwise(
     constructor: Constructor, keys: list[nw.Expr], lazy_context: Any
 ) -> None:
-    data = {"a": [1, 2, 2, None], "b": [0, 1, 2, 3], "x": [1, 2, 3, 4]}
+    data: Data = {"a": [1, 2, 2, None], "b": [0, 1, 2, 3], "x": [1, 2, 3, 4]}
     df = nw.from_native(constructor(data))
 
     context: Any = (
@@ -541,7 +545,11 @@ def test_group_by_raise_if_not_elementwise(
 def test_group_by_raise_drop_null_keys_with_exprs(
     constructor: Constructor, keys: list[nw.Expr | str]
 ) -> None:
-    data = {"a": [1, 1, 2, 2, -1], "x": [0, 1, 2, 3, 4], "y": [0.5, -0.5, 1.0, -1.0, 1.5]}
+    data: Data = {
+        "a": [1, 1, 2, 2, -1],
+        "x": [0, 1, 2, 3, 4],
+        "y": [0.5, -0.5, 1.0, -1.0, 1.5],
+    }
     df = nw.from_native(constructor(data))
     with pytest.raises(
         NotImplementedError, match="drop_null_keys cannot be True when keys contains Expr"
@@ -550,7 +558,7 @@ def test_group_by_raise_drop_null_keys_with_exprs(
 
 
 def test_group_by_selector(constructor: Constructor) -> None:
-    data = {"a": [1, 1, 1], "b": [4, 4, 6], "c": [7.5, 8.5, 9.0]}
+    data: Data = {"a": [1, 1, 1], "b": [4, 4, 6], "c": [7.5, 8.5, 9.0]}
     result = (
         nw.from_native(constructor(data))
         .group_by(nw.selectors.by_dtype(nw.Int64))
@@ -562,7 +570,7 @@ def test_group_by_selector(constructor: Constructor) -> None:
 
 
 def test_renaming_edge_case(constructor: Constructor) -> None:
-    data = {"a": [0, 0, 0], "_a_tmp": [1, 2, 3], "b": [4, 5, 6]}
+    data: Data = {"a": [0, 0, 0], "_a_tmp": [1, 2, 3], "b": [4, 5, 6]}
     result = nw.from_native(constructor(data)).group_by(nw.col("a")).agg(nw.all().min())
     expected = {"a": [0], "_a_tmp": [1], "b": [4]}
     assert_equal_data(result, expected)
@@ -580,7 +588,7 @@ def test_group_by_len_1_column(
         # `dask`
         #     ValueError: conflicting aggregation functions: [('size', 'a'), ('size', 'a')]
         request.applymarker(pytest.mark.xfail)
-    data = {"a": [1, 2, 1, 2, 3, 4]}
+    data: Data = {"a": [1, 2, 1, 2, 3, 4]}
     expected = {"a": [1, 2, 3, 4], "len": [2, 2, 1, 1], "len_a": [2, 2, 1, 1]}
     result = (
         nw.from_native(constructor(data))
@@ -638,7 +646,7 @@ def test_group_by_no_preserve_dtype(
     if any(x == request.node.callspec.id for x in ("cudf-time", "cudf-bytes")):
         request.applymarker(pytest.mark.xfail)
 
-    data = {
+    data: Data = {
         "col_a": ["A", "B", None, "A", "A", "B", None],
         "col_b": [low, low, high, high, None, None, None],
     }
