@@ -29,15 +29,5 @@ jobs:
           enable-cache: "true"
           cache-suffix: pytest-random-ci-${{ matrix.python-version }}
           cache-dependency-glob: "pyproject.toml"
-      - name: generate-random-versions
-        run: python utils/generate_random_versions.py
-      - name: install-random-versions
-        run: uv pip install -r random-requirements.txt --system
-      - name: install-narwhals
-        run: uv pip install -e . --group tests --system
-      - name: show versions
-        run: uv pip freeze
       - name: Run pytest
-        run: |
-            pytest tests --cov=narwhals --cov=tests --cov-fail-under=75 \
-            --constructors=pandas,pyarrow,polars[eager],polars[lazy]
+        run: uvx --with tox-uv tox -e random_versions

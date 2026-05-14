@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import os
+from unittest.mock import patch
+
 import pytest
 
 import narwhals as nw
@@ -71,7 +74,10 @@ def test_repr(request: pytest.FixtureRequest) -> None:
     assert result == expected
     # Make something wider than the terminal size
     df = pd.DataFrame({"a": [1, 2, 3], "b": ["fdaf" * 100, "fda", "cf"]})
-    result = nw.from_native(duckdb.table("df")).__repr__()
+    with patch(
+        "narwhals._utils.os.get_terminal_size", return_value=os.terminal_size((80, 24))
+    ):
+        result = nw.from_native(duckdb.table("df")).__repr__()
     expected = (
         "┌───────────────────────────────────────┐\n"
         "|          Narwhals LazyFrame           |\n"

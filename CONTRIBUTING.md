@@ -158,6 +158,19 @@ If you add code that should be tested, please add tests.
   - To run tests using `cudf.pandas`, run `NARWHALS_DEFAULT_CONSTRUCTORS=pandas python -m cudf.pandas -m pytest`
   - To run tests using `polars[gpu]`, run `NARWHALS_POLARS_GPU=1 pytest --constructors=polars[lazy]`
 
+#### Reproducing CI environments locally
+
+CI jobs that test specific dependency versions (minimum versions, older versions, nightlies, etc.) are defined as tox environments in `tox.toml`. You can reproduce any of them locally with:
+
+```terminal
+uvx --with tox-uv tox -e minimum_versions
+uvx --with tox-uv tox -e pretty_old_versions
+uvx --with tox-uv tox -e not_so_old_versions
+uvx --with tox-uv tox -e random_versions
+```
+
+`uvx` runs tox without a permanent install. Each environment creates an isolated virtualenv with the exact pinned dependencies defined in `tox.toml`.
+
 ### General considerations
 
 In general we assume that dataframes are used to store and process columnar data. Therefore:

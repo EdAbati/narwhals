@@ -281,6 +281,9 @@ filterwarnings = [
   "ignore:.*is_sparse is deprecated and will be removed in a future version.*:DeprecationWarning:pyarrow",
 
   "ignore:.*invalid value encountered in cast:RuntimeWarning:pandas",
+  # macOS raises these when applying trig functions to NaN values
+  "ignore:.*invalid value encountered in cos:RuntimeWarning:pandas",
+  "ignore:.*invalid value encountered in sin:RuntimeWarning:pandas",
   "ignore:.*The behavior of DataFrame concatenation with empty or all-NA entries is deprecated:FutureWarning",
 
   # raised internally by Dask

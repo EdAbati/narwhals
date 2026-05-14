@@ -10,7 +10,7 @@ on:
       - tests/frame/*sink*.py
   workflow_call:
   schedule:
-    - cron: 0 12 * * 0  # Sunday at mid-day
+    - cron: 0 12 * * 0 # Sunday at mid-day
 
 env:
   PY_COLORS: 1
@@ -39,15 +39,8 @@ jobs:
           enable-cache: "true"
           cache-suffix: pyspark-${{ matrix.python-version }}
           cache-dependency-glob: "pyproject.toml"
-      - name: install-reqs
-        run: uv pip install -e . --group core-tests
-      - name: install pyspark
-        run: uv pip install -e ".[pyspark]"
-      - name: show-deps
-        run: uv pip freeze
       - name: Run pytest
-        run: pytest tests --cov=narwhals/_spark_like --cov-fail-under=95 --runslow --constructors pyspark
-
+        run: uvx --with tox-uv tox -e pytest_pyspark
 
   pytest-pyspark-min-version-constructor:
     if: github.head_ref != 'bump-version'
@@ -67,14 +60,8 @@ jobs:
           enable-cache: "true"
           cache-suffix: pyspark-min-${{ matrix.python-version }}
           cache-dependency-glob: "pyproject.toml"
-      - name: install-reqs
-        run: uv pip install -e . --group core-tests --system
-      - name: install pyspark (min version)
-        run: uv pip install "pyspark==3.5.0" --system
-      - name: show-deps
-        run: uv pip freeze
       - name: Run pytest
-        run: pytest tests --constructors pyspark
+        run: uvx --with tox-uv tox -e pytest_pyspark_min_versions
 
   pytest-pyspark-connect-constructor:
     if: github.head_ref != 'bump-version'

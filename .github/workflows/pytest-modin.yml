@@ -13,7 +13,6 @@ permissions:
   contents: read
 
 jobs:
-
   pytest-modin-constructor:
     if: github.head_ref != 'bump-version'
     strategy:
@@ -32,12 +31,5 @@ jobs:
           enable-cache: "true"
           cache-suffix: modin-${{ matrix.python-version }}
           cache-dependency-glob: "pyproject.toml"
-      - name: install-reqs
-        run: uv pip install -e . --group core-tests
-      - name: install modin
-        run: |
-          uv pip install -e ".[modin]"
-      - name: show-deps
-        run: uv pip freeze
       - name: Run pytest
-        run: pytest tests --constructors modin[pyarrow]
+        run: uvx --with tox-uv tox -e pytest_modin
