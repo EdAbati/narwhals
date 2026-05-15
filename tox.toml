@@ -87,6 +87,7 @@ commands = [
 
 [env.nightlies]
 basepython = "python3.12"
+allowlist_externals = ["bash"]
 commands_pre = [
   ["uv", "pip", "uninstall", "polars"],
   ["uv", "pip", "install", "-U", "--pre", "polars"],
@@ -128,6 +129,10 @@ commands_pre = [
   ["uv", "pip", "uninstall", "duckdb"],
   ["uv", "pip", "install", "-U", "--pre", "duckdb"],
   ["uv", "pip", "freeze"],
+  ["bash", "-c", "uv pip freeze | grep -E 'pandas.*(dev|rc|\\+)'"],
+  ["bash", "-c", "uv pip freeze | grep 'pyarrow.*dev'"],
+  ["bash", "-c", "uv pip freeze | grep 'numpy.*dev'"],
+  ["bash", "-c", "uv pip freeze | grep 'dask.*@'"],
 ]
 commands = [
   [
