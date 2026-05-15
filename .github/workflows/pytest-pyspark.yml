@@ -15,7 +15,6 @@ on:
 env:
   PY_COLORS: 1
   PYTEST_ADDOPTS: "--numprocesses=logical"
-  UV_SYSTEM_PYTHON: 1
 
 permissions:
   contents: read
